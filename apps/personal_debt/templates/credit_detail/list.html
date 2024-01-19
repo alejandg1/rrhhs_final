@@ -1,0 +1,55 @@
+{% extends "components/base_list.html" %} {% load static%} {% block search %}
+<form action="" style="max-width: 450px">
+  <div class="input-group">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Buscar por nombre"
+      name="q1"
+      value="{{ request.GET.q1 }}"
+    />
+    <button
+      class="btn btn-outline-danger"
+      data-bs-toggle="tooltip"
+      data-bs-title="Escriba parte del nombre y dar click en buscar"
+    >
+      Buscar
+    </button>
+  </div>
+</form>
+{% endblock search %} {% block columns %}
+<tr>
+  <th>ID</th>
+  <th>estado</th>
+  <th>cuota</th>
+  <th>fecha de pago</th>
+  <!-- <th>aseguradora</th> -->
+  <th class="text-danger">Acciones</th>
+</tr>
+{% endblock %} {% block rows %} {% for item in creditsDetails %}
+<tr>
+  <td>{{item.id}}</td>
+  <td>{{item.status}}</td>
+  <td>{{item.quota}}</td>
+  <td>{{item.date_discount}}</td>
+  <td class="text-center">
+    {% if permissions.change_creditsdetail %}
+    <a
+      class="text-success fs-4"
+      href="{% url 'personal_debt:creditDetail_update' item.id %}"
+      data-bs-toggle="tooltip"
+      data-bs-title="Editar el detalle de descuento"
+      ><i class="bi bi-pencil-fill"></i
+    ></a>
+    {% endif %} {% if permissions.delete_creditsdetail %}
+    <a
+      class="text-danger fs-4"
+      href="{% url 'personal_debt:creditDetail_delete' item.id %}"
+      data-bs-toggle="tooltip"
+      data-bs-title="Eliminar el detalle de descuento"
+      ><i class="bi bi-x-circle-fill"></i
+    ></a>
+    {% endif %}
+  </td>
+</tr>
+{% empty %} {% include "components/empty.html" %} {% endfor%} {% endblock %}

@@ -1,0 +1,51 @@
+{% extends "components/base_list.html" %}
+{% load static%}
+{% block search %}
+   <form action="" style="max-width: 450px;">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar por nombre" name="q1" value="{{ request.GET.q1 }}">
+            <button class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Escriba parte del nombre y dar click en buscar">
+                Buscar
+            </button>
+        </div>
+    </form>           
+{% endblock search %}
+{% block columns %}
+    <tr > 
+        <th>ID</th>
+        <th>empleado</th>
+        <th>fecha descuento</th>
+        <th>fecha inicio</th>
+        <th>balance</th>
+        <th>procesado</th>
+        <th class="text-danger">Acciones</th>
+    </tr>
+{% endblock %}
+
+{% block rows %}
+    {% for item in credits %}
+        <tr>
+            <td>{{item.id}}</td>
+            <td>{{item.employee.firts_name}} {{item.employee.last_name}}</td>
+            <td>{{item.date_credit|date:"d/m/Y"}}</td>
+            <td>{{item.date_initial|date:"d/m/Y"}}</td>
+            <td>{{item.balance}}</td>
+            <td>{{item.status}}</td>
+            <td class="text-center ">
+            {% if permissions.change_credit%}
+                <a class="text-success fs-4" href="{% url 'personal_debt:credit_update' item.id %}" data-bs-toggle="tooltip" data-bs-title="Editar el credito"><i class="bi bi-pencil-fill"></i></a>
+            {% endif %}
+            {% if permissions.delete_credit %}
+                <a class="text-danger fs-4" href="{% url 'personal_debt:credit_delete' item.id %}" data-bs-toggle="tooltip" data-bs-title="Eliminar el credito"><i class="bi bi-x-circle-fill"></i></a>
+            {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+           {% include "components/empty.html" %}
+    {% endfor%}  
+{% endblock %}
+
+
+
+
+

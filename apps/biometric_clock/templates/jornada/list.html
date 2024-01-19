@@ -1,0 +1,57 @@
+{% extends "components/base_list.html" %}
+{% load static%}
+{% block search %}
+   <form action="" style="max-width: 450px;">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar por jornada " name="q1" value="{{ request.GET.q1 }}">
+            <button class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Escriba parte del apellido y click en buscar">
+                Buscar
+            </button>
+        </div>
+    </form>           
+{% endblock search %}
+{% block columns %}
+    <tr class="text-primary"> 
+        <th class="text-primary">Jornada</th>
+        <th class="text-primary">Desde</th>
+        <th class="text-primary">Hasta</th>
+        <th class="text-primary">Entrada</th>
+        <th class="text-primary">Entrada lunch</th>
+        <th class="text-primary">Salida lunch</th>
+        <th class="text-primary">Salida</th>
+        <th class="text-primary">Horas trabajo</th>
+        <th class="text-danger">Acciones</th>
+    </tr>
+{% endblock %}
+
+{% block rows %}
+
+    {% for item in jornada %}
+        <tr>
+            <td>{{item.descripcion}}</td>
+            <td>{{item.dia_desde}}</td>
+            <td>{{item.dia_hasta}}</td>
+            <td>{{item.hora_entrada}}</td>
+            <td>{{item.hora_entrada_lunch}}</td>
+            <td>{{item.hora_salida_lunch}}</td>
+            <td>{{item.hora_salida}}</td>
+            <td>{{item.horas_trabajo}}</td>
+            <td class="text-center ">
+                {% if  not  permissions.update_jornada %}
+                    <a class="text-success" href="{% url 'biometric_clock:jornada_update' item.id %}" data-bs-toggle="tooltip" data-bs-title="Editar la jornada "><i class="bi bi-pencil-fill"></i></a>
+                {% endif %}
+                {% if permissions.delete_jornada %}
+                    <a class="text-danger" href="{% url 'biometric_clock:jornada_delete' item.id %}" data-bs-toggle="tooltip" data-bs-title="Eliminar la jornada"><i class="bi bi-x-circle-fill"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10" class="text-danger fw-bold h3 text-center">
+                <div class="py-2 mt-2 border border-1 shadow rounded text-center">
+                    ¡No se encontraron datos que cumplan los criterios de búsqueda...!
+                </div>   
+            </td>
+        </tr>
+    {% endfor%}  
+{% endblock %}

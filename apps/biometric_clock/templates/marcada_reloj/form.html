@@ -1,0 +1,8 @@
+{% extends "components/base_form.html" %}
+{% load crispy_forms_tags %}
+{% block controls %}
+      <div class="circle-icon fs-2 btn btn" data-bs-toggle="tooltip" >
+           <i class="bi bi-question"></i>
+      </div>
+      {{form|crispy}}
+{% endblock %}

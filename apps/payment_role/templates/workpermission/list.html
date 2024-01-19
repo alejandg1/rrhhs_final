@@ -1,0 +1,67 @@
+{% extends "components/base_list.html" %}
+{% load static%}
+{% block search %}
+   <form action="" style="max-width: 450px;">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar por permiso " name="q1" value="{{ request.GET.q1 }}">
+            <button class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Escriba parte del apellido y click en buscar">
+                Buscar
+            </button>
+        </div>
+    </form>           
+{% endblock search %}
+{% block columns %}
+    <tr class="text-primary"> 
+        <th class="text-primary">Empleado </th>
+        <th class="text-primary">Tipo Permiso</th>
+        <th class="text-primary">Permiso en</th>
+        <th class="text-primary">Tiempo Permiso</th>
+        <th class="text-primary">Fecha desde</th>
+        <th class="text-primary">Fecha hasta</th>
+        <th class="text-primary">Tiempo Pendiente</th>
+        <th class="text-primary">Procesado</th>
+        <th class="text-danger">Activo</th>
+        <th class="text-danger">Acciones</th>
+    </tr>
+{% endblock %}
+
+{% block rows %}
+
+    {% for item in workpermission %}
+        <tr>
+            <td>{{item.employee}}</td>
+            <td>{{item.type_permission}}</td>
+            <td>{{item.time_descuent}}</td>
+            <td>{{item.time_permission}}</td>
+            <td>{{item.date_from}}</td>
+            <td>{{item.date_to}}</td>
+            <td>{{item.time_earring}}</td>
+            {% if item.status %}
+                <td class="text-center text-success fs-3"><i class='bx bx-check-circle'></i></td>
+            {% else %}
+                <td class="text-center text-danger fs-3"><i class='bx bx-x-circle'></i></td>
+            {% endif %}
+            {% if item.active %}
+                <td class="text-center text-success fs-3"><i class='bx bx-check-circle'></i></td>
+            {% else %}
+                <td class="text-center text-danger fs-3"><i class='bx bx-x-circle'></i></td>
+            {% endif %}
+            <td class="text-center ">
+                {% if  permissions.change_workpermission %}
+                    <a class="text-success" href="{% url 'payment_role:workpermission_update' item.id %}" data-bs-toggle="tooltip" data-bs-title="Editar la workpermission "><i class="bi bi-pencil-fill"></i></a>
+                {% endif %}
+                {% if  permissions.delete_workpermission %}
+                    <a class="text-danger" href="{% url 'payment_role:workpermission_delete' item.id %}" data-bs-toggle="tooltip" data-bs-title="Eliminar la workpermission"><i class="bi bi-x-circle-fill"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10" class="text-danger fw-bold h3 text-center">
+                <div class="py-2 mt-2 border border-1 shadow rounded text-center">
+                    ¡No se encontraron datos que cumplan los criterios de búsqueda...!
+                </div>   
+            </td>
+        </tr>
+    {% endfor%}  
+{% endblock %}

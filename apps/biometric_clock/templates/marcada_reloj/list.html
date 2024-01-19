@@ -1,0 +1,76 @@
+{% extends "components/base_list.html" %}
+{% load static%}
+{% block search %}
+   <form action="" style="max-width: 450px;">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar por Reloj " name="q1" value="{{ request.GET.q1 }}">
+            <button class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Escriba parte de la jornada y click en buscar">
+                Buscar
+            </button>
+        </div>
+    </form>           
+{% endblock search %}
+{% block columns %}
+    <tr class="text-primary"> 
+        <th class="text-primary">Empleado</th>
+        <th class="text-primary">Jornada</th>
+        <th class="text-primary">Fecha</th>
+        <th class="text-primary">Hora de entrada</th>
+        <th class="text-danger">Hora de entrada lunch</th>
+        <th class="text-primary">Hora de salida lunch</th>
+        <th class="text-danger">Hora de salida</th>
+        <th class="text-danger">Horas trabajadas</th>
+        <th class="text-danger">Acciones</th>
+
+    </tr>
+{% endblock %}
+
+{% block rows %}
+  
+    {% for item in marcadas_reloj %}
+        <tr>
+            <td>{{item.empleado|upper}}</td>
+            <td>{{item.jornada|upper}}</td>
+            <td>{{item.fecha}}</td>
+            <td>{{item.hora_entrada}}</td>
+            <td>{{item.hora_entrada_lunch}}</td>
+            <td>{{item.hora_salida_lunch}}</td>
+            <td>{{item.hora_salida}}</td>
+            <td>{{item.horas_trabajadas}}</td>
+            <td class="text-center ">
+                
+                 {% if permissions.change_marcadareloj %}
+                     <a class="text-success" href="{% url 'biometric_clock:marcada_reloj_update' item.id %}" data-bs-toggle="tooltip" data-bs-title="Editar la marca de reloj "><i class="bi bi-pencil-fill"></i></a>
+                 {% endif %}
+
+                 {% if permissions.delete_marcadareloj %}
+                     <a class="text-danger" href="{% url 'biometric_clock:marcada_reloj_delete' item.id %}" data-bs-toggle="tooltip" data-bs-title="Eliminar marca de reloj"><i class="bi bi-x-circle-fill"></i></a>
+                 {% endif %}
+
+                 
+
+            </td>
+        </tr>
+           <!-- Modal para mostrar el código QR -->
+
+  
+        {% empty %}
+       <tr>
+            <td colspan="8" class="text-danger fw-bold h3 text-center">
+                <div class="py-2 mt-2 border border-1 shadow rounded text-center">
+                    ¡No se encontraron datos que cumplan los criterios de búsqueda...!
+                </div>   
+            </td>
+        </tr>
+
+
+    {% endfor%}  
+
+
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <!-- Bootstrap JS (Popper.js included) -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+{% endblock %}
