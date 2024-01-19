@@ -7,3 +7,4 @@ CLASS_PERMISSION = ((1, 'Calamidad Domestica'), (2, 'Injustificado'), (3, 'Enfer
                     'Enfermedad Regenerativa'), (5, 'Accidente'), (6, 'Maternidad'), (7, 'Paternidad'), (8, 'Vacacion'))
 TIME_DESCUENT = ((1, "dias"), (2, "Horas"))
 CREDIT_STATUS = ((1, 'pendiente'), (2, 'Rol'), (3, 'Comprobante'))
+CREDIT_INTEREST = ((1, 10), (2, 12))

@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from rrhhs.const import CREDIT_STATUS
 from apps.personal_debt.models import Credit
 from apps.personal_debt.forms.credit import CreditForm
 
@@ -26,6 +27,7 @@ class CreditListView(ListViewMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Creditos'
+        context['estado'] = CREDIT_STATUS
         context['create_url'] = reverse_lazy('personal_debt:credit_create')
         context['permission_add'] = context['permissions'].get(
             'add_credit', '')

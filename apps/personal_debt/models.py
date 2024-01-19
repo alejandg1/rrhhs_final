@@ -3,7 +3,7 @@ from django.forms import model_to_dict
 from apps.core.models import ModelBase
 from apps.payment_role.models import Item
 from apps.personal_file.models import Employee
-from rrhhs.const import CREDIT_STATUS
+from rrhhs.const import CREDIT_STATUS, CREDIT_INTEREST
 
 
 class Credit(ModelBase):
@@ -14,19 +14,22 @@ class Credit(ModelBase):
         limit_choices_to={'type_item': 2})
     date_credit = models.DateTimeField(verbose_name='Fecha desde')
     date_initial = models.DateTimeField(verbose_name='Fecha hasta')
-    value = models.DecimalField(
-        verbose_name="Interes(%)", decimal_places=2, max_digits=10)
-    interest = models.DecimalField(
-        verbose_name="Valor Interes", decimal_places=2, max_digits=10)
-    value_interest = models.DecimalField(
-        verbose_name="Valor Prestamo", decimal_places=2, max_digits=10)
+    interest = models.IntegerField(
+        verbose_name="Interes(%)",
+        choices=CREDIT_INTEREST,
+        default=CREDIT_INTEREST[1][1])
+    interestval = models.DecimalField(
+        verbose_name="Valor Interes", decimal_places=2, max_digits=10, null=True)
+    loan_val = models.FloatField(
+        verbose_name="Valor Prestamo", default=0)
     nume_quota = models.IntegerField("Numero Cuotas", blank=True, null=True)
     balance = models.DecimalField(
         verbose_name="Saldo", decimal_places=2, max_digits=10)
-    status = models.IntegerField(
+    statusid = models.IntegerField(
         verbose_name="estado",
         choices=CREDIT_STATUS,
         default=CREDIT_STATUS[0][0])
+    status = models.CharField(verbose_name="status", default="")
     reason = models.CharField(
         verbose_name="Observacion", max_length=200, blank=True, null=True)
     active = models.BooleanField(verbose_name='Activo', default=True)
@@ -45,10 +48,11 @@ class Credit(ModelBase):
         return f'{self.item.description} - {self.employee.get_full_name()}'
 
     def save(self, *args, **kwargs):
-        self.interest = (self.value/100)*self.value_interest
-        self.balance = (self.value_interest+self.interest)
+        self.interestval = round((self.interest/100)*self.loan_val)
+        self.balance = (self.loan_val+self.interestval)
         self.balance_processed = self.balance
-        self.status_processed = self.status
+        self.status = CREDIT_STATUS[self.statusid-1][1]
+        self.status_processed = self.statusid
         super().save(self, *args, **kwargs)
 
     class Meta:
@@ -71,7 +75,7 @@ class CreditsDetail(ModelBase):
     status_quota_processed = models.BooleanField(
         verbose_name='Activo Procesado', default=False)
     balance_quota_processed = models.DecimalField(
-        verbose_name="Saldo Procesado cuots", decimal_places=2, max_digits=10)
+        verbose_name="Saldo Procesado cuotas", decimal_places=2, max_digits=10)
 
     def get_model_to_dict(self):
         item = model_to_dict(self)

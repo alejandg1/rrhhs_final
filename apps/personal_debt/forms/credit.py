@@ -8,8 +8,8 @@ class CreditForm(ModelForm):
     class Meta:
         model = Credit
         fields = '__all__'
-        exclude = ['calendar_processed',
-                   'status_processed', 'balance_processed', 'interest', 'balance']
+        exclude = ['status','calendar_processed',
+                   'status_processed', 'balance_processed', 'interestval', 'balance']
         widgets = {
             'date_credit': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'date_initial': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),

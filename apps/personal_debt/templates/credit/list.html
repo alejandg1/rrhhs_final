@@ -17,7 +17,8 @@
         <th>fecha descuento</th>
         <th>fecha inicio</th>
         <th>balance</th>
-        <th>procesado</th>
+        <th>estado</th>
+        <th>activo</th>
         <th class="text-danger">Acciones</th>
     </tr>
 {% endblock %}
@@ -31,6 +32,11 @@
             <td>{{item.date_initial|date:"d/m/Y"}}</td>
             <td>{{item.balance}}</td>
             <td>{{item.status}}</td>
+            {% if item.active %}
+                <td class="text-center text-success fs-3"><i class='bx bx-check-circle'></i></td>
+            {% else %}
+                <td class="text-center text-danger fs-3"><i class='bx bx-x-circle'></i></td>
+            {% endif %}
             <td class="text-center ">
             {% if permissions.change_credit%}
                 <a class="text-success fs-4" href="{% url 'personal_debt:credit_update' item.id %}" data-bs-toggle="tooltip" data-bs-title="Editar el credito"><i class="bi bi-pencil-fill"></i></a>

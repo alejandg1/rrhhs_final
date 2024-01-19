@@ -4,11 +4,14 @@ from crum import get_current_user
 from django.forms import model_to_dict
 from rrhhs import utils
 
+
 class ModelBase(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True, blank=True,null=True)
-    created_by = models.CharField(max_length=100, blank=True,null=True,editable=False)
-    updated_at = models.DateTimeField(auto_now=True, blank=True,null=True)
-    update_by = models.CharField(max_length=100,blank=True,null=True,editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created_by = models.CharField(
+        max_length=100, blank=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    update_by = models.CharField(
+        max_length=100, blank=True, null=True, editable=False)
 
     @property
     def created_at_format(self):
@@ -17,7 +20,6 @@ class ModelBase(models.Model):
     @property
     def updated_at_format(self):
         return self.updated_at.strftime("%Y-%m-%d %H:%M:%S")
-      
 
     def save(self, *args, **kwargs):
         try:
@@ -34,10 +36,11 @@ class ModelBase(models.Model):
     class Meta:
         abstract = True
 
+
 class Country(ModelBase):
     name = models.CharField(verbose_name='Nombre', max_length=50, unique=True)
     active = models.BooleanField(verbose_name='Activo', default=True)
-  
+
     def __str__(self):
         return self.name
 
@@ -50,11 +53,13 @@ class Country(ModelBase):
         verbose_name_plural = 'Paises'
         ordering = ['-name']
 
+
 class City(ModelBase):
-    country = models.ForeignKey(Country,on_delete=models.PROTECT,verbose_name="Pais")
-    name = models.CharField('Descripcion',max_length=100)
+    country = models.ForeignKey(
+        Country, on_delete=models.PROTECT, verbose_name="Pais")
+    name = models.CharField('Descripcion', max_length=100)
     active = models.BooleanField(verbose_name='Activo', default=True)
- 
+
     def __str__(self):
         return self.name
 
@@ -67,14 +72,17 @@ class City(ModelBase):
         verbose_name_plural = 'Ciudades'
         ordering = ['-name']
 
+
 class Organization(ModelBase):
     name = models.CharField(
         verbose_name='Nombre de la organización',
         max_length=100,
         unique=True
     )
-    country = models.ForeignKey(Country,on_delete=models.PROTECT,verbose_name='Pais')
-    city = models.ForeignKey(City,on_delete=models.PROTECT,verbose_name='Ciudad')
+    country = models.ForeignKey(
+        Country, on_delete=models.PROTECT, verbose_name='Pais')
+    city = models.ForeignKey(
+        City, on_delete=models.PROTECT, verbose_name='Ciudad')
     image = models.ImageField(
         verbose_name='Logo',
         upload_to='organization',
@@ -95,11 +103,13 @@ class Organization(ModelBase):
         blank=True,
         null=True
     )
-    latitude = models.CharField("Latitud", max_length=100, blank=True, null=True)
-    longitude = models.CharField("Longitud", max_length=100, blank=True, null=True)
+    latitude = models.CharField(
+        "Latitud", max_length=100, blank=True, null=True)
+    longitude = models.CharField(
+        "Longitud", max_length=100, blank=True, null=True)
     matriz = models.BooleanField(default=False)
     active = models.BooleanField(verbose_name='Activo', default=True)
- 
+
     @staticmethod
     def get_organization_first():
         return Organization.objects.filter(matriz=True).order_by('id').first()
@@ -123,5 +133,3 @@ class Organization(ModelBase):
         verbose_name = 'Sucursal'
         verbose_name_plural = 'Sucursales'
         ordering = ('-id',)
-
-
