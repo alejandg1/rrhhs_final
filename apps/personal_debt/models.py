@@ -19,7 +19,10 @@ class Credit(ModelBase):
         choices=CREDIT_INTEREST,
         default=CREDIT_INTEREST[1][1])
     interestval = models.DecimalField(
-        verbose_name="Valor Interes", decimal_places=2, max_digits=10, null=True)
+        verbose_name="Valor Interes",
+        decimal_places=2,
+        max_digits=10,
+        null=True)
     loan_val = models.FloatField(
         verbose_name="Valor Prestamo", default=0)
     nume_quota = models.IntegerField("Numero Cuotas", blank=True, null=True)
@@ -41,8 +44,8 @@ class Credit(ModelBase):
         verbose_name="Saldo Procesado", decimal_places=2, max_digits=10)
 
     def get_model_to_dict(self):
-        item = model_to_dict(self)
-        return item
+        model = model_to_dict(self)
+        return model
 
     def __str__(self):
         return f'{self.item.description} - {self.employee.get_full_name()}'

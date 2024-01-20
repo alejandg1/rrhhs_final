@@ -20,6 +20,7 @@ class UserForm(ModelForm):
             "image",
             "is_active"
         ]
+
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         # Guarda el valor actual del campo como valor inicial
@@ -31,7 +32,6 @@ class MyPasswordChangeForm2(ModelForm):
         "password_mismatch": "The two password fields didn’t match.",
         "password_incorrect": "Your old password was entered incorrectly. Please enter it again.",
     }
-
 
     old_password = forms.CharField(
         label="Old password",

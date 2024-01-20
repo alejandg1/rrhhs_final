@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from apps.security.models import User
 
+
 class ProfileForm(ModelForm):
     class Meta:
         model = User
@@ -12,4 +13,3 @@ class ProfileForm(ModelForm):
             "direction",
             "image",
         ]
-    

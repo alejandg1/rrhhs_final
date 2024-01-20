@@ -1,57 +1,159 @@
-{% extends "components/base_list.html" %}
-{% load static%}
-{% block search %}
-   <form action="" style="max-width: 450px;">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Buscar por nombre" name="q1" value="{{ request.GET.q1 }}">
-            <button class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Escriba parte del nombre y dar click en buscar">
-                Buscar
-            </button>
-        </div>
-    </form>           
-{% endblock search %}
-{% block columns %}
-    <tr > 
-        <th>ID</th>
-        <th>empleado</th>
-        <th>fecha descuento</th>
-        <th>fecha inicio</th>
-        <th>balance</th>
-        <th>estado</th>
-        <th>activo</th>
-        <th class="text-danger">Acciones</th>
-    </tr>
+{% extends "components/base_list.html" %} {% load static%} {% block search %}
+<form action="" style="max-width: 450px">
+  <div class="input-group">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Buscar por nombre"
+      name="q1"
+      value="{{ request.GET.q1 }}"
+    />
+    <button
+      class="btn btn-outline-danger"
+      data-bs-toggle="tooltip"
+      data-bs-title="Escriba parte del nombre y dar click en buscar"
+    >
+      Buscar
+    </button>
+  </div>
+</form>
+{% endblock search %} {% block columns %}
+<tr>
+  <th>ID</th>
+  <th>empleado</th>
+  <th>fecha descuento</th>
+  <th>fecha inicio</th>
+  <th>balance</th>
+  <th>estado</th>
+  <th>activo</th>
+  <th class="text-danger">Acciones</th>
+</tr>
+{% endblock %} {% block rows %} {% for item in credits %}
+<tr>
+  <td>{{item.id}}</td>
+  <td>{{item.employee.firts_name}} {{item.employee.last_name}}</td>
+  <td>{{item.date_credit|date:"d/m/Y"}}</td>
+  <td>{{item.date_initial|date:"d/m/Y"}}</td>
+  <td>{{item.balance}}</td>
+  <td>{{item.status}}</td>
+  {% if item.active %}
+  <td class="text-center text-success fs-3">
+    <i class="bx bx-check-circle"></i>
+  </td>
+  {% else %}
+  <td class="text-center text-danger fs-3"><i class="bx bx-x-circle"></i></td>
+  {% endif %}
+  <td class="text-center">
+    <button
+      rel="rel-detail"
+      data-id="{{item.id}}"
+      type="button"
+      class="text-info"
+      data-bs-toggle="modal"
+      data-bs-target="#miModal"
+    >
+      <i class="bx bxs-detail"></i>
+    </button>
+
+    {% if permissions.change_credit%}
+    <a
+      class="text-success fs-4"
+      href="{% url 'personal_debt:credit_update' item.id %}"
+      data-bs-toggle="tooltip"
+      data-bs-title="Editar el credito"
+      ><i class="bi bi-pencil-fill"></i
+    ></a>
+    {% endif %} {% if permissions.delete_credit %}
+    <a
+      class="text-danger fs-4"
+      href="{% url 'personal_debt:credit_delete' item.id %}"
+      data-bs-toggle="tooltip"
+      data-bs-title="Eliminar el credito"
+      ><i class="bi bi-x-circle-fill"></i
+    ></a>
+    {% endif %}
+  </td>
+</tr>
+{% empty %} {% include "components/empty.html" %} {% endfor%} {% endblock %}
+{%block modal%}
+<div
+  class="modal fade"
+  id="miModal"
+  tabindex="-1"
+  aria-labelledby="miModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-bg-danger">
+        <h5 class="modal-title text-white" id="miModalLabel"></h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body fw-bold text-dark text-uppercase" id="modal-body">
+        Contenido del modal. Aquí puedes agregar cualquier contenido que desees
+        mostrar dentro del modal.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block file_js %}
+
+<script>
+  document.getElementById("detalle").addEventListener("click", async (e) => {
+    const fil = e.target.closest("button[rel=rel-detail]");
+    if (fil) {
+      const data = await fetchGet(
+        `/personal_debt/Credit/detail?id=${fil.dataset.id}`
+      );
+      if (!data.ok) return alert("error en los datos");
+      let { id, empleado, item, registro, interes, balance, prestamo } =
+        data.data.credit;
+      let detail = data.data.detail;
+      trHoras = "";
+      detail.forEach((det) => {
+        trHoras += `<tr>
+                    <td>${det.id}</td>
+                    <td>${det.dat}</td>
+                    <td>${det.quo}</td>
+                    <td>${det.est}</td>
+                </tr>`;
+      });
+      document.getElementById(
+        "miModalLabel"
+      ).innerHTML = `Detalle del credito: ${id}`;
+      $body = document.getElementById("modal-body");
+      $body.innerHTML = `
+            <h5>Empleado: ${empleado} </h5>
+            <h6>item: ${item}</h6>
+            <h6>registro: <span class="text-bg-danger">${registro}<span>  </p>
+            <hr>
+            <section class="table-responsive" style="margin-top:-35px;margin-bottom: -35px;">
+            <table class="table table-hover table-fluid">
+            <thead class="text-center border-4 custom-header-rounded   ">
+                <tr class="text-info"> 
+                    <th class="text-info">id</th>
+                    <th class="text-info">fecha</th>
+                    <th class="text-info">cuota</th>
+                    <th class="text-info">estado</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+              ${trHoras}  
+            </tbody>
+            </table>
+        </section>
+        `;
+    }
+  });
+</script>
 {% endblock %}
-
-{% block rows %}
-    {% for item in credits %}
-        <tr>
-            <td>{{item.id}}</td>
-            <td>{{item.employee.firts_name}} {{item.employee.last_name}}</td>
-            <td>{{item.date_credit|date:"d/m/Y"}}</td>
-            <td>{{item.date_initial|date:"d/m/Y"}}</td>
-            <td>{{item.balance}}</td>
-            <td>{{item.status}}</td>
-            {% if item.active %}
-                <td class="text-center text-success fs-3"><i class='bx bx-check-circle'></i></td>
-            {% else %}
-                <td class="text-center text-danger fs-3"><i class='bx bx-x-circle'></i></td>
-            {% endif %}
-            <td class="text-center ">
-            {% if permissions.change_credit%}
-                <a class="text-success fs-4" href="{% url 'personal_debt:credit_update' item.id %}" data-bs-toggle="tooltip" data-bs-title="Editar el credito"><i class="bi bi-pencil-fill"></i></a>
-            {% endif %}
-            {% if permissions.delete_credit %}
-                <a class="text-danger fs-4" href="{% url 'personal_debt:credit_delete' item.id %}" data-bs-toggle="tooltip" data-bs-title="Eliminar el credito"><i class="bi bi-x-circle-fill"></i></a>
-            {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-           {% include "components/empty.html" %}
-    {% endfor%}  
-{% endblock %}
-
-
-
-
-

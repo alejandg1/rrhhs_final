@@ -16,6 +16,8 @@ urlpatterns += [
     path('Credit/delete/<int:pk>',
          credit.CreditDeleteView.as_view(),
          name="credit_delete"),
+    path('Credit/detail', credit.CreditDetailView.as_view(),
+         name="credit_detail"),
 
     path('CreditDetail/list',
          credit_detail.CreditsDetailListView.as_view(),
