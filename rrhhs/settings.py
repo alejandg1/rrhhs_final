@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv # importar archivo de entorno
-load_dotenv() # carga las variables de entorno
+from dotenv import load_dotenv  # importar archivo de entorno
+load_dotenv()  # carga las variables de entorno
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -97,7 +97,7 @@ WSGI_APPLICATION = 'rrhhs.wsgi.application'
 #     }
 # }
 # instalar variable de entorno: python-dotenv==0.21.1
-# drive de postgress: psycopg2-binary==2.9.1 
+# drive de postgress: psycopg2-binary==2.9.1
 DATABASES = {
     "default": {
         'ENGINE': os.environ.get("DB_ENGINE", "django.db.backends.postgresql"),
@@ -109,7 +109,6 @@ DATABASES = {
         'ATOMIC_REQUESTS': True
     }
 }
-
 
 
 # Password validation
@@ -148,10 +147,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/' # url de archivos estaticos
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)# carpeta fisica de archivos estaticos
-MEDIA_ROOT = os.path.join(BASE_DIR,'media') # carpeta fisica de archivos de Imagenes
-MEDIA_URL = '/media/' # url de imagenes
+STATIC_URL = '/static/'  # url de archivos estaticos
+# carpeta fisica de archivos estaticos
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# carpeta fisica de archivos de Imagenes
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'  # url de imagenes
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

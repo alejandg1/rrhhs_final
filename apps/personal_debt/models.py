@@ -87,7 +87,7 @@ class CreditsDetail(ModelBase):
     def save(self, *args, **kwargs):
         self.balance_quota_processed = self.balance_quota
         self.status_quota_processed = self.status
-        self.calendar_quota_processed = self.date_discount
+        # self.calendar_quota_processed = self.date_discount
         super().save(self, *args, **kwargs)
 
     def __str__(self):

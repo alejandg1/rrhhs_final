@@ -49,61 +49,20 @@ d.addEventListener("DOMContentLoaded", function (e) {
     present();
   });
 
-  $form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    let $csrfmiddlewaretoken = d.getElementsByName("csrfmiddlewaretoken")[0];
-    let $employee = d.getElementById("id_employee");
-    let $type = d.getElementById("id_type");
-    let $datei = d.getElementById("id_date_initial");
-    let $datec = d.getElementById("id_date_credit");
-    let $amount = d.getElementById("id_amount");
-    let $status = d.getElementById("id_status");
-    let $detail_credit = d.getElementById("id_detail_credit");
-    $detail_credit.value = JSON.stringify(detailCredit);
-    let data = {
-      csrfmiddlewaretoken: $csrfmiddlewaretoken.value,
-      employee: $employee.value,
-      type: $type.value,
-      datei: $datei.value,
-      datec: $datec.value,
-      amount: $amount.value,
-      detail: $detail.value,
-      status: $status.value,
-      detail_credit: $detail_credit.value,
-    };
-    c(data);
-    fetch("", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        c(data);
-        if (data.ok) {
-          location.href = data.url;
-        } else {
-          alert(data.message);
-        }
-      });
-  });
-  // ---------- envia los datos del sobretiempo al backend por ajax para grabarlo ----------
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    // if (parseFloat(d.getElementById("id_total").value) > 0.0) {
     const formData = new FormData($form);
     formData.append("detail", JSON.stringify(detailCredit));
-    const employee = await fetchPost(location.pathname, formData);
-    console.log(employee);
-    if (!employee.ok) return c(employee.data);
+    const request = await fetchPost(location.pathname, formData);
+    if (!request.ok) return c(request);
     window.location = backUrl;
-    // } else {
-    //   alert("!!!Ingrese horas de sobretiempo para grabar!!!");
-    // }
   });
-  // -------- registra las horas del sobretiempo en el arreglo detailOvertime[] ---------
 
-  //---- por delegacion de eventos seleccionada la fila de las horas del sobretiempo ----------
+  const deleteHours = (id) => {
+    detailCredit = detailCredit.filter((item) => item.idHour !== id);
+    present();
+    totals();
+  };
   //---- y la elimina del arreglo de detailOvertime[]  ---------
   $detailBody.addEventListener("click", (e) => {
     const fil = e.target.closest("button[rel=rel-delete]");
