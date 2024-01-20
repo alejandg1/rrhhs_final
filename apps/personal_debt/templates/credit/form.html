@@ -1,5 +1,5 @@
 {% extends "components/base_transaction.html" %}
-{% load static %} 
+{% load static %}
 {% block controls %}
 <div
   class="circle-icon fs-2 btn btn"
@@ -27,25 +27,47 @@
   <div class="col-md-3">
     {% include "components/field.html" with field=form.loan_val %}
   </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.statusid %}
+  </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.active %}
+  </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.nume_quota %}
+  </div>
 </div>
 <div class="row mb-3">
   <div class="col-md-3">
-    <label for="opciones" class="form-label">fecha descuento</label>
-    <input
-      type="date"
-      class="form-control"
-      name="date"
-      id="date_discount"
-    />
-  </div>
-  <div class="col-md-3">
-    {% comment %} {% include "components/field.html" with field=form.nume_hours
-    %} {% endcomment %}
-    <label for="id_nume_huors" class="form-label">balance de la cuota</label>
+    <label for="id_nume_huors" class="form-label">N° cuota</label>
     <input
       type="number"
       class="form-control"
       name="nume_hours"
+      id="nquota"
+      placeholder="Ingrese el balance de la cuota"
+    />
+  </div>
+  <div class="col-md-3">
+    <label for="id_nume_huors" class="form-label">procesado</label>
+    <input
+      type="checkbox"
+      class="form-control"
+      name="procesado"
+      id="status"
+      placeholder="Ingrese el balance de la cuota"
+    />
+  </div>
+  <div class="col-md-3">
+    <label for="opciones" class="form-label">fecha descuento</label>
+    <input type="date" class="form-control" name="date" id="date_discount" />
+  </div>
+  <div class="col-md-3">
+    <label for="id_nume_huors" class="form-label">balance de cuota</label>
+    <input
+      type="number"
+      class="form-control"
+      name="balance_cuota"
       id="balance_quota"
       placeholder="Ingrese el balance de la cuota"
     />
@@ -59,16 +81,9 @@
       Add detail
     </button>
   </div>
-  <!-- <div -->
-  <!--   class="col-md-2 mt-5 text-danger" -->
-  <!--   style="font-size: 16px; text-transform: uppercase" -->
-  <!-- > -->
-  <!--   {% include "components/field.html" with field=form.total %} -->
-  <!-- </div> -->
 </div>
 
 {% endblock %}
-
 {% block detalle %}
 <section
   class="table-responsive"
@@ -87,14 +102,12 @@
     <tbody id="detalle" class="text-center"></tbody>
   </table>
 </section>
-{% endblock %}
-
+{% endblock %} 
 {% block file_js %}
 <script>
   var backUrl = "{{back_url}}";
-  var detail_hours = JSON.parse("{{ detail_hours|escapejs }}");
-  console.log("detalle horas");
-  console.log(detail_hours);
+  var detail = JSON.parse("{{ detail_credit|escapejs }}");
+  console.log({{detail_credit}});
 </script>
 <script src="{% static 'credit/credit.js' %}"></script>
 

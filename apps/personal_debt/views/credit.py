@@ -1,16 +1,14 @@
-from typing import Any
-
-from django.urls import reverse_lazy
-from django.forms import model_to_dict
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.views import View
-from rrhhs.const import CREDIT_STATUS
-from apps.personal_debt.models import Credit, CreditsDetail
-from apps.personal_debt.forms.credit import CreditForm
-
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
-from django.db.models import Q
 from apps.security.mixins.mixins import ListViewMixin, CreateViewMixin, UpdateViewMixin, DeleteViewMixin, PermissionMixin
+from django.db.models import Q
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from apps.personal_debt.forms.credit import CreditForm
+from apps.personal_debt.models import Credit, CreditsDetail
+from apps.payment_role.models import Item
+from rrhhs.const import CREDIT_STATUS
+from django.views import View
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.urls import reverse_lazy
+import json
 
 
 class CreditListView(ListViewMixin, ListView):
@@ -50,10 +48,11 @@ class CreditCreateView(CreateViewMixin, CreateView):
         context = super().get_context_data()
         context['grabar'] = 'Grabar credito'
         context['back_url'] = self.success_url
-        context['detail_credit'] = []
         return context
 
-    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+    def post(self, request: HttpRequest,
+             *args: str,
+             **kwargs) -> HttpResponse:
         form = self.get_form()
         if not form.is_valid():
             print("form:", form.errors)
@@ -99,6 +98,27 @@ class CreditUpdateView(UpdateViewMixin, UpdateView):
         context = super().get_context_data()
         context['grabar'] = 'Actualizar credito'
         context['back_url'] = self.success_url
+        # context['item'] = Item.objects.filter(
+        #     sucursal_id=self.item.id, active=True).order_by('id')
+        detcretit = list(
+            CreditsDetail.objects.filter(
+                credit=self.object.id).values(
+                'id',
+                'date_discount',
+                'balance_quota',
+                'status',
+                'quota')
+        )
+        lista = []
+        for det in detcretit:
+            lista.append({"id": det['id'],
+                         "dati": det['date_initial'],
+                          "datc": det['date_discount'],
+                          "bal": det['balance_quota'],
+                          "est": det['status'],
+                          "quote": det['quota']
+                          })
+        context['detail_credit'] = lista
         return context
 
 
@@ -111,7 +131,8 @@ class CreditDeleteView(DeleteViewMixin, DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['grabar'] = 'Eliminar credito'
-        context['description'] = f"¿Desea Eliminar el credito: {self.object.id}?"
+        context['description'] = f"""¿Desea Eliminar el credito:
+        {self.object.id}?"""
         context['back_url'] = self.success_url
         return context
 
