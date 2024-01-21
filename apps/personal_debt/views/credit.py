@@ -104,22 +104,58 @@ class CreditUpdateView(UpdateViewMixin, UpdateView):
             CreditsDetail.objects.filter(
                 credit=self.object.id).values(
                 'id',
-                'date_discount',
                 'balance_quota',
                 'status',
                 'quota')
         )
         lista = []
         for det in detcretit:
-            lista.append({"id": det['id'],
-                         "dati": det['date_initial'],
-                          "datc": det['date_discount'],
-                          "bal": det['balance_quota'],
-                          "est": det['status'],
+            lista.append({"det_id": det['id'],
+                          "bal": float(det['balance_quota']),
+                          "status": det['status'],
                           "quote": det['quota']
                           })
-        context['detail_credit'] = lista
+        context['detail_credit'] = json.dumps(lista)
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if not form.is_valid():
+            return JsonResponse({}, status=400)
+        data = request.POST
+        item_id = data['item']
+        emp_id = data['employee']
+        datec = data['date_credit']
+        datei = data['date_initial']
+        interest = data['interest']
+        loan_val = data['loan_val']
+        statusid = data['statusid']
+        active = data['active']
+        nume_quota = data['nume_quota']
+        credit = Credit.objects.get(id=self.kwargs.get('pk'))
+        print(credit)
+        print("credit", credit)
+        credit.item_id = item_id
+        credit.employee_id = emp_id
+        credit.date_initial = datei
+        credit.date_credit = datec
+        credit.interest = int(interest)
+        credit.loan_val = float(loan_val)
+        credit.statusid = int(statusid)
+        credit.active = True if active == "on" else False
+        credit.nume_quota = nume_quota
+        credit.save()
+        details = json.loads(request.POST['detail'])
+        CreditsDetail.objects.filter(id=credit.id).delete()
+        for detail in details:
+            CreditsDetail.objects.create(
+                credit_id=credit.id,
+                date_discount=detail['date'],
+                quota=detail['quota'],
+                status=True if detail['status'] == "on" else False,
+                balance_quota=detail['balance']
+            )
+        return JsonResponse({}, status=200)
 
 
 class CreditDeleteView(DeleteViewMixin, DeleteView):

@@ -92,8 +92,7 @@
   <table class="table table-hover table-fluid" id="tableOvertime">
     <thead class="text-center border-4 custom-header-rounded">
       <tr class="text-info">
-        <th class="text-info">IdDetalle</th>
-        <th class="text-info">fecha</th>
+        <!-- <th class="text-info">IdDetalle</th> -->
         <th class="text-info">° cuota</th>
         <th class="text-info">estado</th>
         <th class="text-info">balance de cuota</th>
@@ -102,12 +101,13 @@
     <tbody id="detalle" class="text-center"></tbody>
   </table>
 </section>
-{% endblock %} 
+{% endblock %}
 {% block file_js %}
 <script>
   var backUrl = "{{back_url}}";
   var detail = JSON.parse("{{ detail_credit|escapejs }}");
-  console.log({{detail_credit}});
+  console.log("detalle");
+  console.log(detail);
 </script>
 <script src="{% static 'credit/credit.js' %}"></script>
 

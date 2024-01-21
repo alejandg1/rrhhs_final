@@ -92,6 +92,9 @@ d.addEventListener('DOMContentLoaded', function (e) {
       const formData = new FormData($form)
       formData.append("detail", JSON.stringify(detailOvertime))
       const employee = await fetchPost(location.pathname, formData)
+      console.log(formData)
+      console.log(employee)
+      setTimeout(9000)
       if (!employee.ok) return c(employee.data)
       window.location = backUrl
     }else{
