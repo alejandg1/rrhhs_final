@@ -1,5 +1,5 @@
 {% extends "components/base_transaction.html" %}
-{% load static %}
+{% load static %} 
 {% block controls %}
 <div
   class="circle-icon fs-2 btn btn"
@@ -83,7 +83,7 @@
   </div>
 </div>
 
-{% endblock %}
+{% endblock %} 
 {% block detalle %}
 <section
   class="table-responsive"
@@ -96,6 +96,7 @@
         <th class="text-info">° cuota</th>
         <th class="text-info">estado</th>
         <th class="text-info">balance de cuota</th>
+        <th class="text-info">fecha</th>
       </tr>
     </thead>
     <tbody id="detalle" class="text-center"></tbody>
@@ -106,8 +107,6 @@
 <script>
   var backUrl = "{{back_url}}";
   var detail = JSON.parse("{{ detail_credit|escapejs }}");
-  console.log("detalle");
-  console.log(detail);
 </script>
 <script src="{% static 'credit/credit.js' %}"></script>
 

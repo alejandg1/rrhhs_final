@@ -12,8 +12,8 @@ class Credit(ModelBase):
     item = models.ForeignKey(
         Item, on_delete=models.PROTECT, verbose_name='Tipo Descuento',
         limit_choices_to={'type_item': 2})
-    date_credit = models.DateTimeField(verbose_name='Fecha desde')
-    date_initial = models.DateTimeField(verbose_name='Fecha hasta')
+    date_credit = models.DateField(verbose_name='Fecha desde')
+    date_initial = models.DateField(verbose_name='Fecha hasta')
     interest = models.IntegerField(
         verbose_name="Interes(%)",
         choices=CREDIT_INTEREST,
@@ -67,8 +67,8 @@ class Credit(ModelBase):
 class CreditsDetail(ModelBase):
     credit = models.ForeignKey(
         Credit, on_delete=models.CASCADE, verbose_name='Credito')
-    date_discount = models.DateTimeField(verbose_name='Fecha Descuento')
-    quota = models.IntegerField("Numero Cuota", default=0)
+    date_discount = models.DateField(verbose_name='Fecha Descuento')
+    quota = models.IntegerField("Numero Cuota")
     status = models.BooleanField(
         verbose_name="Procesado", default=False)
     balance_quota = models.DecimalField(

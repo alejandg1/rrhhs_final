@@ -5,47 +5,71 @@ let d = document,
 d.addEventListener("DOMContentLoaded", function (e) {
   // Declaracion de variables
   let $nquota = d.getElementById("nquota");
+  let $quotas = d.getElementById("id_nume_quota");
   let $status = d.getElementById("status");
   let $date_discount = d.getElementById("date_discount");
   let $balance = d.getElementById("balance_quota");
   let $btnadd = d.getElementById("btnadd");
   let $detailBody = d.getElementById("detalle");
-  // let $btnGrabar = d.getElementById("btnGrabar");
   let $form = d.getElementById("form-container");
   let detailCredit = [];
+  console.log(detail);
   if (detail.length > 0) {
     detailCredit = detail.map((item) => {
-      const { id: det_id, quot: quote, st: status, bal: balance } = item;
-      return { det_id, quote, status, balance };
+      const {
+        det_id: id,
+        date: date,
+        quote: quote,
+        status: status,
+        bal: balance,
+      } = item;
+      return { id, quote, status, date, balance };
     });
     present();
   }
 
-  // Declaracion de metodos
   function present() {
-    print(detailCredit);
-    c("estoy en present()");
     let detalle = document.getElementById("detalle");
     detalle.innerHTML = "";
     detailCredit.forEach((detail) => {
+      let state = detail.st ? "procesado" : "pendiente";
+      console.log(detail);
       detalle.innerHTML += `<tr>
             <td>${detail.quote}</td>
-            <td>${detail.status}</td>
+            <td>${state}</td>
             <td>${detail.balance}</td>
+            <td>${detail.date}</td>
             <td>
-
+            <td class="text-center ">
+            <button rel="rel-delete" data-id="${detail.quote}" class="text-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar registro"><i class="bi bi-x-circle-fill"></i></button>
+        </td>
             </tr>`;
     });
   }
 
   $btnadd.addEventListener("click", (e) => {
-    e.preventDefault();
-    let date = $date_discount.value;
-    let quota = $nquota.value;
-    let status = $status.value;
-    let balance = $balance.value;
-    detailCredit.push({ date, quota, status, balance });
-    present();
+    let existe = detailCredit.some((detail) => detail.quote == $nquota.value);
+    if (!existe) {
+      if ($nquota.value <= $quotas.value) {
+        e.preventDefault();
+        let date = $date_discount.value;
+        let quote = $nquota.value;
+        let status = $status.value ? true : false;
+        let balance = $balance.value;
+        detailCredit.push({ date, quote, status, balance });
+        present();
+      } else {
+        let detalle = document.getElementById("detalle");
+        detalle.innerHTML += `<p id="error_cuota">no puede agregar más cuotas de las establecidas</p>`;
+        let error = document.getElementById("error_cuota");
+        error.style.color = "red";
+      }
+    } else {
+      let detalle = document.getElementById("detalle");
+      detalle.innerHTML += `<p id="error_cuota">ya existe una cuota con ese numero</p></p>`;
+      let error = document.getElementById("error_cuota");
+      error.style.color = "red";
+    }
   });
 
   $form.addEventListener("submit", async (e) => {
@@ -59,7 +83,7 @@ d.addEventListener("DOMContentLoaded", function (e) {
   });
 
   const deleteHours = (id) => {
-    detailCredit = detailCredit.filter((item) => item.id !== id);
+    detailCredit = detailCredit.filter((item) => item.quote !== id);
     present();
   };
   //---- y la elimina del arreglo de detailOvertime[]  ---------

@@ -115,9 +115,11 @@
       const data = await fetchGet(
         `/personal_debt/Credit/detail?id=${fil.dataset.id}`
       );
+      console.log(data)
       if (!data.ok) return alert("error en los datos");
       let { id, empleado, item, registro, interes, balance, prestamo } =
         data.data.credit;
+
       let detail = data.data.detail;
       trHoras = "";
       detail.forEach((det) => {
@@ -126,6 +128,7 @@
                     <td>${det.dat}</td>
                     <td>${det.quo}</td>
                     <td>${det.est}</td>
+                    <td>${det.balance} $</td>
                 </tr>`;
       });
       document.getElementById(
@@ -143,8 +146,9 @@
                 <tr class="text-info"> 
                     <th class="text-info">id</th>
                     <th class="text-info">fecha</th>
-                    <th class="text-info">cuota</th>
+                    <th class="text-info">N. cuota</th>
                     <th class="text-info">estado</th>
+                    <th class="text-info">balance</th>
                 </tr>
             </thead>
             <tbody class="text-center">
