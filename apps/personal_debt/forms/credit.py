@@ -5,6 +5,17 @@ from apps.personal_debt.models import Credit
 
 
 class CreditForm(ModelForm):
+    date_credit = forms.DateField(
+        widget=forms.DateInput(
+            attrs={'type': 'date', 'class': 'form-control'}
+        )
+    )
+    date_initial = forms.DateField(
+        widget=forms.DateInput(
+            attrs={'type': 'date', 'class': 'form-control'}
+        )
+    )
+
     class Meta:
         model = Credit
         fields = '__all__'
@@ -15,14 +26,15 @@ class CreditForm(ModelForm):
                    'interestval',
                    'balance'
                    ]
-        widgets = {
-            'date_credit': forms.DateInput(
-                attrs={'type': 'date', 'class': 'form-control'}
-            ),
-            'date_initial': forms.DateInput(
-                attrs={'type': 'date', 'class': 'form-control'}
-            ),
-        }
+        # widgets = {
+        #     'date_credit': forms.DateInput(
+        #         attrs={'type': 'date', 'class': 'form-control'},
+        #         initial=instance.date_credit.strftime('%Y-%m-%d')
+        #     ),
+        #     'date_initial': forms.DateInput(
+        #         attrs={'type': 'date', 'class': 'form-control'}
+        #     ),
+        # }
 
     def clean(self):
         credit_clean = super().clean()

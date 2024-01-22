@@ -76,6 +76,7 @@ d.addEventListener("DOMContentLoaded", function(e) {
     const formData = new FormData($form);
     formData.append("detail", JSON.stringify(detailCredit));
     const request = await fetchPost(location.pathname, formData);
+    console.log(formData)
     if (!request.ok) return c(request);
     window.location = backUrl;
   });

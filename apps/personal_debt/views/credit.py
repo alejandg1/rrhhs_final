@@ -22,10 +22,10 @@ class CreditListView(ListViewMixin, ListView):
         self.query = Q()
         q1 = self.request.GET.get('q1')  # ver
         if q1 is not None:
-            self.query.add(Q(code__icontains=q1), Q.AND)
+            self.query.add(Q(employee__last_name__icontains=q1), Q.AND)
         # q2 = self.request.GET.get('q2') # ver
         # if q2 is not None:
-        #     query.add(Q(estado__icontains=q2), Q.AND)
+        #     self.query.add(Q(emplotee_last_name__icontains=q2), Q.AND)
         return self.model.objects.filter(self.query).order_by('id')
 
     def get_context_data(self, **kwargs):
