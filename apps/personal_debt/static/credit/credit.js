@@ -2,7 +2,7 @@
 let d = document,
   c = console.log;
 // ------------------- carga inicial de la pagina ------------------------
-d.addEventListener("DOMContentLoaded", function (e) {
+d.addEventListener("DOMContentLoaded", function(e) {
   // Declaracion de variables
   let $nquota = d.getElementById("nquota");
   let $quotas = d.getElementById("id_nume_quota");
@@ -13,17 +13,16 @@ d.addEventListener("DOMContentLoaded", function (e) {
   let $detailBody = d.getElementById("detalle");
   let $form = d.getElementById("form-container");
   let detailCredit = [];
-  console.log(detail);
   if (detail.length > 0) {
     detailCredit = detail.map((item) => {
       const {
         det_id: id,
         date: date,
         quote: quote,
-        status: status,
+        // status: status,
         bal: balance,
       } = item;
-      return { id, quote, status, date, balance };
+      return { id, quote, date, balance };
     });
     present();
   }
@@ -32,11 +31,10 @@ d.addEventListener("DOMContentLoaded", function (e) {
     let detalle = document.getElementById("detalle");
     detalle.innerHTML = "";
     detailCredit.forEach((detail) => {
-      let state = detail.st ? "procesado" : "pendiente";
-      console.log(detail);
+      // let state = detail.status ? "procesado" : "pendiente";
+            // <td>${state}</td>
       detalle.innerHTML += `<tr>
             <td>${detail.quote}</td>
-            <td>${state}</td>
             <td>${detail.balance}</td>
             <td>${detail.date}</td>
             <td>
@@ -54,7 +52,8 @@ d.addEventListener("DOMContentLoaded", function (e) {
         e.preventDefault();
         let date = $date_discount.value;
         let quote = $nquota.value;
-        let status = $status.value ? true : false;
+        // let status = $status.value == "on" ? true : false;
+        // console.log(status)
         let balance = $balance.value;
         detailCredit.push({ date, quote, status, balance });
         present();
@@ -77,7 +76,6 @@ d.addEventListener("DOMContentLoaded", function (e) {
     const formData = new FormData($form);
     formData.append("detail", JSON.stringify(detailCredit));
     const request = await fetchPost(location.pathname, formData);
-    console.log(formData);
     if (!request.ok) return c(request);
     window.location = backUrl;
   });

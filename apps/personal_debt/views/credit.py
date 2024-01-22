@@ -87,7 +87,7 @@ class CreditCreateView(CreateViewMixin, CreateView):
                 date_discount=datetime.strptime(
                     detail['date'][:10], '%Y-%m-%d'),
                 quota=detail['quote'],
-                status=True if detail['status'] == "on" else False,
+                # status=True if detail['status'] == "on" else False,
                 balance_quota=detail['balance']
             )
         return JsonResponse({}, status=200)
@@ -117,7 +117,7 @@ class CreditUpdateView(UpdateViewMixin, UpdateView):
         for det in detcretit:
             lista.append({"det_id": det['id'],
                           "bal": float(det['balance_quota']),
-                          "status": det['status'],
+                          # "status": det['status'],
                           "quote": det['quota'],
                           "date": det['date_discount'].isoformat()
                           })
@@ -136,7 +136,10 @@ class CreditUpdateView(UpdateViewMixin, UpdateView):
         interest = data['interest']
         loan_val = data['loan_val']
         statusid = data['statusid']
-        active = data['active']
+        if 'active' in request.POST:
+            active = True if data['active'] == "on" else False
+        else:
+            active = False
         nume_quota = data['nume_quota']
         credit = Credit.objects.get(id=self.kwargs.get('pk'))
         credit.item_id = item_id
@@ -146,7 +149,7 @@ class CreditUpdateView(UpdateViewMixin, UpdateView):
         credit.interest = int(interest)
         credit.loan_val = float(loan_val)
         credit.statusid = int(statusid)
-        credit.active = True if active == "on" else False
+        credit.active = active
         credit.nume_quota = nume_quota
         credit.save()
         details = json.loads(request.POST['detail'])
@@ -157,7 +160,7 @@ class CreditUpdateView(UpdateViewMixin, UpdateView):
                 date_discount=datetime.strptime(
                     detail['date'][:10], '%Y-%m-%d'),
                 quota=detail['quote'],
-                status=True if detail['status'] == "on" else False,
+                # status=True if detail['status'] == "on" else False,
                 balance_quota=detail['balance']
             )
         return JsonResponse({}, status=200)
@@ -194,7 +197,7 @@ class CreditDetailView(PermissionMixin, View):
                 lista.append({"id": det.id,
                               "dat": det.date_discount,
                               "quo": det.quota,
-                              "est": "procesado" if det.status else "pendiente",
+                              # "est": "procesado" if det.status else "pendiente",
                               "balance": det.balance_quota
                               })
             return JsonResponse({'credit':

@@ -5,9 +5,14 @@
    <label class="control-label fw-bold" for="{{ field.id_for_label }}">
       {{ field.label }}:
    </label>
-   {{ field|add_class:"form-control" }}
- 
+
+   {% if field.field.widget.input_type == "checkbox" %}
+       {{ field }} <!-- Renderiza el checkbox normalmente -->
+   {% else %}
+       {{ field|add_class:"form-control" }} <!-- Aplica la clase form-control solo a los campos que no son checkbox -->
+   {% endif %}
+   
    <div class="invalid-feedback">
        {{ field.errors }}
    </div>
-</section>    
+</section>
