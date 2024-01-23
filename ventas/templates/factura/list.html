@@ -55,6 +55,14 @@
 
     {% if permissions.change_cabecera%}
     <a
+      href="{% url 'ventas:generar_pdf_prestamo' %}"
+      class="text-info fs-4"
+      data-bs-toggle="tooltip"
+      data-bs-title="Descargar PDF"
+    >
+      <i class="bi bi-file-earmark-pdf-fill"></i>
+    </a>
+    <a
       class="text-success fs-4"
       href="{% url 'venta:cabecera_update' item.id %}"
       data-bs-toggle="tooltip"

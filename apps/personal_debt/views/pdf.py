@@ -31,7 +31,7 @@ def generar_pdf_prestamo(request):
 
     # Encabezados de las columnas para la tabla
     encabezados = ('ID Crédito', 'Empleado', 'Tipo Descuento',
-                   'Valor Préstamo', 'Saldo')
+                   'Valor Préstamo', 'Saldo', 'Cuota', 'Fecha')
     data = [encabezados]  # Lista de listas para la data de la tabla
 
     # Estilos de la tabla
@@ -50,27 +50,31 @@ def generar_pdf_prestamo(request):
 
     # Agregar los datos de Credit y CreditsDetail a la tabla
     for credito in Credit.objects.all():
-        # Agregar la fila de cada Credit
-        data.append([
+        credit_data = [
             str(credito.id),
-            credito.employee.get_full_name(),
-            credito.item.description,
-            str(credito.loan_val),
-            str(credito.balance)
-        ])
+            credito.employee.last_name + " " + credito.employee.firts_name,
+            # Asumiendo que "PRESTAMO A LA EMPRESA" es el formato y quieres solo "PRESTAMO"
+            credito.item.description.split(" ")[0],
+            "{:.2f}".format(credito.loan_val),
+            "{:.2f}".format(credito.balance),
+            ""  # Cuota inicialmente vacía
+        ]
+        data.append(credit_data)
 
         # Agregar las filas de los CreditsDetail asociados
-        for detalle in CreditsDetail.objects.filter(credit=credito):
-            data.append([
-                '',
-                f'Cuota {detalle.quota}',
-                detalle.date_discount.strftime('%Y-%m-%d'),
-                '',
-                str(detalle.balance_quota),
-            ])
+        for detalle in CreditsDetail.objects.filter(credit=credito).order_by('quota'):
+            detail_data = [
+                "",  # ID Crédito vacío para las filas de detalle
+                "",  # Empleado vacío para las filas de detalle
+                "",  # Tipo Descuento vacío para las filas de detalle
+                "",  # Valor Préstamo vacío para las filas de detalle
+                "",  # Saldo vacío para las filas de detalle
+                f"Cuota {detalle.quota} - {detalle.date_discount.strftime('%Y-%m-%d')} - {detalle.balance_quota:.2f}"
+            ]
+            data.append(detail_data)
 
     # Crear la tabla y aplicar estilos
-    table = Table(data, colWidths=[width/5.0]*5, style=table_style)
+    table = Table(data, colWidths=[width/6.0]*6, style=table_style)
     elements.append(table)
 
     # Construir el PDF
