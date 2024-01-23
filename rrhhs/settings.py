@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.personal_evaluation',
     'apps.personal_vacation',
     'apps.payment_role',
+    'ventas',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

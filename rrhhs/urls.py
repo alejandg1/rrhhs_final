@@ -31,4 +31,8 @@ urlpatterns = [
 
     path('personal_debt/', include('apps.personal_debt.urls',
          namespace="personal_debt")),
+
+    path('ventas/', include('ventas.urls',
+         namespace="ventas")),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

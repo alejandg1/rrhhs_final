@@ -4,7 +4,7 @@
     <input
       type="text"
       class="form-control"
-      placeholder="Buscar por apellido"
+      placeholder="Buscar por cliente"
       name="q1"
       value="{{ request.GET.q1 }}"
     />
@@ -19,30 +19,28 @@
 </form>
 {% endblock search %} {% block columns %}
 <tr>
-  <th>ID</th>
-  <th>empleados</th>
-  <th>fecha descuento</th>
-  <th>fecha inicio</th>
-  <th>balance</th>
-  <th>estado</th>
-  <th>activo</th>
+  <th>Cliente</th>
+  <th>Fecha</th>
+  <th>Subtotal</th>
+  <th>Iva</th>
+  <th>Total</th>
+
   <th class="text-danger">Acciones</th>
 </tr>
-{% endblock %} {% block rows %} {% for item in credits %}
+{% endblock %} {% block rows %} {% for item in factura %} vo ac a
 <tr>
-  <td>{{item.id}}</td>
-  <td>{{item.employee.firts_name}} {{item.employee.last_name}}</td>
-  <td>{{item.date_credit|date:"d/m/Y"}}</td>
-  <td>{{item.date_initial|date:"d/m/Y"}}</td>
+  <td>{{item.client}}</td>
+  <td>{{item.date}}</td>
+  <td>{{item.total|date:"d/m/Y"}}</td>
   <td>{{item.balance}}</td>
-  <td>{{item.status}}</td>
-  {% if item.active %}
+  <td>{{item.client}}</td>
+  {% comment %} {% if item.active %}
   <td class="text-center text-success fs-3">
     <i class="bx bx-check-circle"></i>
   </td>
   {% else %}
   <td class="text-center text-danger fs-3"><i class="bx bx-x-circle"></i></td>
-  {% endif %}
+  {% endif %} {% endcomment %}
   <td class="text-center">
     <button
       rel="rel-detail"
@@ -55,20 +53,20 @@
       <i class="bx bxs-detail"></i>
     </button>
 
-    {% if permissions.change_credit%}
+    {% if permissions.change_cabecera%}
     <a
       class="text-success fs-4"
-      href="{% url 'personal_debt:credit_update' item.id %}"
+      href="{% url 'venta:cabecera_update' item.id %}"
       data-bs-toggle="tooltip"
-      data-bs-title="Editar el credito"
+      data-bs-title="Editar la factura"
       ><i class="bi bi-pencil-fill"></i
     ></a>
-    {% endif %} {% if permissions.delete_credit %}
+    {% endif %} {% if permissions.delete_cabecera %}
     <a
       class="text-danger fs-4"
-      href="{% url 'personal_debt:credit_delete' item.id %}"
+      href="{% url 'ventas:cabecera_delete' item.id %}"
       data-bs-toggle="tooltip"
-      data-bs-title="Eliminar el credito"
+      data-bs-title="Eliminar la factura"
       ><i class="bi bi-x-circle-fill"></i
     ></a>
     {% endif %}
@@ -106,7 +104,7 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block file_js %}
+{% endblock %} {% comment %} {% block file_js %}
 
 <script>
   document.getElementById("detalle").addEventListener("click", async (e) => {
@@ -158,4 +156,4 @@
     }
   });
 </script>
-{% endblock %}
+{% endblock %} {% endcomment %}

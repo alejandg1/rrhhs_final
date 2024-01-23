@@ -1,0 +1,85 @@
+{% extends "components/base_transaction.html" %} {% load static %} {% block
+controls %}
+<div
+  class="circle-icon fs-2 btn btn"
+  data-bs-toggle="tooltip"
+  data-bs-title="Por favor, ingrese los datos requeridos."
+>
+  <i class="bi bi-question"></i>
+</div>
+<div class="row mb-3">
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.client %}
+  </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.date %}
+  </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.subtotal %}
+  </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.iva %}
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-md-3">
+    <label for="id_nume_huors" class="form-label">producto</label>
+    <input
+      type="number"
+      class="form-control"
+      name="nume_hours"
+      id="nquota"
+      placeholder="Ingrese el balance de la cuota"
+    />
+  </div>
+  <div class="col-md-3">
+    <label for="opciones" class="form-label">fecha descuento</label>
+    <input type="date" class="form-control" name="date" id="date_discount" />
+  </div>
+  <div class="col-md-3">
+    <label for="id_nume_huors" class="form-label">balance de cuota</label>
+    <input
+      type="number"
+      class="form-control"
+      name="balance_cuota"
+      id="balance_quota"
+      placeholder="Ingrese el balance de la cuota"
+    />
+  </div>
+  <div class="col-md-4 mt-4">
+    <button
+      class="btn btn-nuevo text-white fw-bold fs-4"
+      type="button"
+      id="btnadd"
+    >
+      Add detail
+    </button>
+  </div>
+</div>
+
+{% endblock %} {% block detalle %}
+<section
+  class="table-responsive"
+  style="margin-top: -35px; margin-bottom: -35px"
+>
+  <table class="table table-hover table-fluid" id="tableOvertime">
+    <thead class="text-center border-4 custom-header-rounded">
+      <tr class="text-info">
+        <!-- <th class="text-info">IdDetalle</th> -->
+        <th class="text-info">° cuota</th>
+        <!-- <th class="text-info">estado</th> -->
+        <th class="text-info">balance de cuota</th>
+        <th class="text-info">fecha</th>
+      </tr>
+    </thead>
+    <tbody id="detalle" class="text-center"></tbody>
+  </table>
+</section>
+{% endblock %} {% block file_js %}
+<script>
+  var backUrl = "{{back_url}}";
+  var detail = JSON.parse("{{ detail_credit|escapejs }}");
+</script>
+<script src="{% static 'credit/credit.js' %}"></script>
+
+{% endblock %}

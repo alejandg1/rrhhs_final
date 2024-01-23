@@ -4,10 +4,9 @@ from django.db.models import Q
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from apps.personal_debt.forms.credit import CreditForm
 from apps.personal_debt.models import Credit, CreditsDetail
-from apps.payment_role.models import Item
 from rrhhs.const import CREDIT_STATUS
 from django.views import View
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 import json
 
@@ -23,9 +22,6 @@ class CreditListView(ListViewMixin, ListView):
         q1 = self.request.GET.get('q1')  # ver
         if q1 is not None:
             self.query.add(Q(employee__last_name__icontains=q1), Q.AND)
-        # q2 = self.request.GET.get('q2') # ver
-        # if q2 is not None:
-        #     self.query.add(Q(emplotee_last_name__icontains=q2), Q.AND)
         return self.model.objects.filter(self.query).order_by('id')
 
     def get_context_data(self, **kwargs):
@@ -65,7 +61,11 @@ class CreditCreateView(CreateViewMixin, CreateView):
         interest = data['interest']
         loan_val = data['loan_val']
         statusid = data['statusid']
-        active = data['active']
+        # active = data['active']
+        if 'active' in request.POST:
+            active = data['active']
+        else:
+            active = 'off'
         nume_quota = data['nume_quota']
         # credit = Credit.objects.get(id=self.kwargs.get('pk'))
         credit = Credit.objects.create(
@@ -197,7 +197,6 @@ class CreditDetailView(PermissionMixin, View):
                 lista.append({"id": det.id,
                               "dat": det.date_discount,
                               "quo": det.quota,
-                              # "est": "procesado" if det.status else "pendiente",
                               "balance": det.balance_quota
                               })
             return JsonResponse({'credit':

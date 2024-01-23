@@ -2,11 +2,11 @@
 let d = document,
   c = console.log;
 // ------------------- carga inicial de la pagina ------------------------
-d.addEventListener("DOMContentLoaded", function(e) {
+d.addEventListener("DOMContentLoaded", function (e) {
   // Declaracion de variables
   let $nquota = d.getElementById("nquota");
   let $quotas = d.getElementById("id_nume_quota");
-  let $status = d.getElementById("status");
+  let $datai = d.getElementById("datai");
   let $date_discount = d.getElementById("date_discount");
   let $balance = d.getElementById("balance_quota");
   let $btnadd = d.getElementById("btnadd");
@@ -32,7 +32,7 @@ d.addEventListener("DOMContentLoaded", function(e) {
     detalle.innerHTML = "";
     detailCredit.forEach((detail) => {
       // let state = detail.status ? "procesado" : "pendiente";
-            // <td>${state}</td>
+      // <td>${state}</td>
       detalle.innerHTML += `<tr>
             <td>${detail.quote}</td>
             <td>${detail.balance}</td>
@@ -48,6 +48,12 @@ d.addEventListener("DOMContentLoaded", function(e) {
   $btnadd.addEventListener("click", (e) => {
     let existe = detailCredit.some((detail) => detail.quote == $nquota.value);
     if (!existe) {
+      // if ($date_discount.value == $datai.value) {
+      //   let detalle = document.getElementById("detalle");
+      //   detalle.innerHTML += `<p id="error_cuota">no puede agregar cuotas con una fecha ante4rior a la inicial</p>`;
+      //   let error = document.getElementById("error_cuota");
+      //   error.style.color = "red";
+      // }
       if ($nquota.value <= $quotas.value) {
         e.preventDefault();
         let date = $date_discount.value;
@@ -76,7 +82,7 @@ d.addEventListener("DOMContentLoaded", function(e) {
     const formData = new FormData($form);
     formData.append("detail", JSON.stringify(detailCredit));
     const request = await fetchPost(location.pathname, formData);
-    console.log(formData)
+    console.log(formData);
     if (!request.ok) return c(request);
     window.location = backUrl;
   });
