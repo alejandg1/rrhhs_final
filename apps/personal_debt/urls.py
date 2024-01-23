@@ -1,5 +1,6 @@
 from django.urls import path
 from apps.personal_debt.views import credit_detail, credit
+from apps.personal_debt.views.pdf import generar_pdf_prestamo
 app_name = "personal_debt"
 urlpatterns = []
 
@@ -31,4 +32,7 @@ urlpatterns += [
     path('CreditDetail/delete/<int:pk>',
          credit_detail.CreditsDetailDeleteView.as_view(),
          name="creditDetail_delete"),
+
+    path('prestamos/generar_pdf', generar_pdf_prestamo,
+         name='generar_pdf_prestamo'),
 ]

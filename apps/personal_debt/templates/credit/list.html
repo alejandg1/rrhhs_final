@@ -37,6 +37,7 @@
   <td>{{item.balance}}</td>
   <td>{{item.status}}</td>
   {% if item.active %}
+
   <td class="text-center text-success fs-3">
     <i class="bx bx-check-circle"></i>
   </td>
@@ -54,8 +55,16 @@
     >
       <i class="bx bxs-detail"></i>
     </button>
-
-    {% if permissions.change_credit%}
+    {% if permissions.change_credit %}
+    <a
+      href="{% url 'personal_debt:generar_pdf_prestamo' %}"
+      class="text-info fs-4"
+      data-bs-toggle="tooltip"
+      data-bs-title="Descargar PDF"
+    >
+      <i class="bi bi-file-earmark-pdf-fill"></i>
+    </a>
+    {% endif %} {% if permissions.change_credit%}
     <a
       class="text-success fs-4"
       href="{% url 'personal_debt:credit_update' item.id %}"

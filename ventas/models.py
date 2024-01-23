@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.db import models
 from django.forms import model_to_dict
 from apps.core.models import ModelBase
+from rrhhs.const import CREDIT_INTEREST
 
 
 class Category(ModelBase):
@@ -43,7 +44,7 @@ class Product(ModelBase):
         ordering = ('id',)
 
 
-class CLient(ModelBase):
+class Client(ModelBase):
     first_name = models.CharField(verbose_name="nombre", max_length=20)
     last_name = models.CharField(verbose_name="apellido", max_length=20)
     email = models.CharField(verbose_name="email", max_length=20)
@@ -65,10 +66,12 @@ class CLient(ModelBase):
 
 class Cabecera(ModelBase):
     client = models.ForeignKey(
-        CLient, on_delete=models.PROTECT, verbose_name='Cliente')
+        Client, on_delete=models.PROTECT, verbose_name='Cliente')
     date = models.DateTimeField(verbose_name='Fecha', default=timezone.now)
     subtotal = models.IntegerField(verbose_name='Subtotal', default=0)
-    iva = models.IntegerField(verbose_name='Iva', default=0)
+    iva = models.IntegerField(
+        verbose_name='Iva', choices=CREDIT_INTEREST,
+        default=CREDIT_INTEREST[0][0])
     total = models.IntegerField(verbose_name='Total', default=0)
 
     def get_model_dict(self):

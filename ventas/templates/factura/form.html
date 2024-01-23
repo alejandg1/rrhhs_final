@@ -1,5 +1,6 @@
-{% extends "components/base_transaction.html" %} {% load static %} {% block
-controls %}
+{% extends "components/base_transaction.html" %}
+{% load static %}
+{% block controls %}
 <div
   class="circle-icon fs-2 btn btn"
   data-bs-toggle="tooltip"
@@ -22,22 +23,17 @@ controls %}
   </div>
 </div>
 <div class="row mb-3">
+		<div class="col-md-3 ">
+			<label for="opciones" class="form-label">producto</label>
+			<select name="type_hours" id="product" class="form-control">
+				{% for item in products %}
+        <option data-value="{{item.name}}" value="{{item.id}}">{{item.name}}  {{item.price}}$  {{item.stock}} units</option>
+				{% endfor %}
+			</select>
+			
+		</div>
   <div class="col-md-3">
-    <label for="id_nume_huors" class="form-label">producto</label>
-    <input
-      type="number"
-      class="form-control"
-      name="nume_hours"
-      id="nquota"
-      placeholder="Ingrese el balance de la cuota"
-    />
-  </div>
-  <div class="col-md-3">
-    <label for="opciones" class="form-label">fecha descuento</label>
-    <input type="date" class="form-control" name="date" id="date_discount" />
-  </div>
-  <div class="col-md-3">
-    <label for="id_nume_huors" class="form-label">balance de cuota</label>
+    <label for="id_nume_huors" class="form-label">cantidad</label>
     <input
       type="number"
       class="form-control"
@@ -57,7 +53,8 @@ controls %}
   </div>
 </div>
 
-{% endblock %} {% block detalle %}
+{% endblock %}
+{% block detalle %}
 <section
   class="table-responsive"
   style="margin-top: -35px; margin-bottom: -35px"
@@ -66,10 +63,10 @@ controls %}
     <thead class="text-center border-4 custom-header-rounded">
       <tr class="text-info">
         <!-- <th class="text-info">IdDetalle</th> -->
-        <th class="text-info">° cuota</th>
+        <th class="text-info">producto</th>
         <!-- <th class="text-info">estado</th> -->
-        <th class="text-info">balance de cuota</th>
-        <th class="text-info">fecha</th>
+        <th class="text-info">cantidad</th>
+        <th class="text-info">subtotal</th>
       </tr>
     </thead>
     <tbody id="detalle" class="text-center"></tbody>
