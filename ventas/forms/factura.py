@@ -13,7 +13,7 @@ class CabeceraForm(ModelForm):
     class Meta:
         model = Cabecera
         fields = '__all__'
-        # exclude = ['id']
+        # exclude = []
 
     # class Meta:
     #     model = Detalle

@@ -1,6 +1,6 @@
-
+from datetime import datetime
+from rrhhs.const import CREDIT_INTEREST
 import json
-from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
@@ -53,7 +53,6 @@ class CabeceraCreateView(PermissionMixin, CreateViewMixin, CreateView,):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
-        # data = form.save(commit=False)
         if not form.is_valid():
             print("form:", form.errors)
             return JsonResponse({}, status=400)
@@ -62,22 +61,23 @@ class CabeceraCreateView(PermissionMixin, CreateViewMixin, CreateView,):
         date = data['date']
         subtotal = data['subtotal']
         total = data['total']
-        iva = data['iva']
+        iva = CREDIT_INTEREST[int(data['iva'])-1][1]
         cabecera = Cabecera.objects.create(
             client_id=client,
-            date=date,
+            # date=date,
+            date=datetime.strptime(date[:10], '%Y-%m-%d'),
             subtotal=subtotal,
             total=total,
             iva=iva
         )
 
         details = json.loads(request.POST['detail'])
-        Detalle.objects.filter(overtime_id=cabecera.id).delete()
+        Detalle.objects.filter(cabecera_id=cabecera.id).delete()
         for detail in details:
             Detalle.objects.create(
                 cabecera_id=cabecera.id,
                 product_id=detail['product'],
-                quantity=detail['quantity'],
+                quantity=detail['cantidad'],
                 subtotal=detail['subtotal']
             )
         return JsonResponse({}, status=200)
@@ -87,8 +87,8 @@ class CabeceraUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     model = Cabecera
     template_name = 'factura/form.html'
     form_class = CabeceraForm
-    success_url = reverse_lazy('payment_role:overtime_list')
-    permission_required = "update_overtime"
+    success_url = reverse_lazy('ventas:cabecera_list')
+    permission_required = "update_cabecera"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -97,24 +97,24 @@ class CabeceraUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
         context['products'] = Product.objects.filter(
             stock__gt=0).order_by('id')
         detCabecera = list(Detalle.objects.filter(
-            factura_id=self.object.id).values(
-            "factura__client__first_name",
-            "factura__client__last_name",
+            cabecera_id=self.object.id).values(
             "product__name",
             "quantity",
-            "unitprice"
+            "product__price",
+            "product__id",
+            "subtotal"
         ))
         lista = []
         for det in detCabecera:
             lista.append(
-                {"cliente": det["factura__client__first_name"]+' '+det['factura__client__last_name'],
-                 "prod": det['product__name'],
+                {"prod": det['product__name'],
                  "quant": float(det["quantity"]),
-                 "unirp": float(det["unitprice"]),
+                 "price": float(det['product__price']),
+                 "product_id": float(det['product__id']),
+                 "subtotal": float(det["subtotal"]),
                  })
 
         context['details'] = json.dumps(lista)
-        print(context['details'])
         return context
 
     def post(self, request, *args, **kwargs):
@@ -123,20 +123,20 @@ class CabeceraUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
             return JsonResponse({}, status=400)
         data = request.POST
         client = data['client']
-        date = data['date']
+        # date = data['date']
+        date = datetime.strptime(data['date'][:10], '%Y-%m-%d')
         subtotal = data['subtotal']
         total = data['total']
-        iva = data['iva']
+        iva = CREDIT_INTEREST[int(data['iva'])-1][1]
         cabecera = Cabecera.objects.get(id=self.kwargs.get('pk'))
-        print(cabecera)
-        cabecera.client = client
-        cabecera.employee_id = date
-        cabecera.value_hour = subtotal
+        cabecera.client_id = client
+        cabecera.date = date
+        cabecera.subtotal = subtotal
         cabecera.total = total
         cabecera.iva = iva
         cabecera.save()
         details = json.loads(request.POST['detail'])
-        Detalle.objects.filter(overtime_id=cabecera.id).delete()
+        Detalle.objects.filter(cabecera_id=cabecera.id).delete()
         for detail in details:
             Detalle.objects.create(
                 cabecera_id=cabecera.id,
@@ -155,61 +155,43 @@ class CabeceraDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     permission_required = "delete_cabecera"
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data()
         context['grabar'] = 'Eliminar factura'
-        context['description'] = f"¿Desea Eliminar la factura de los registros: de {self.object.client}?"
+        context['description'] = f"""
+        ¿Desea Eliminar la factura de los registros:
+        de {self.object.client}?"""
         context['back_url'] = self.success_url
 
         return context
-
-
-# class CabeceraValueHours(PermissionMixin, View):
-
-#     def get(self, request, *args, **kwargs):
-#         action = request.GET.get('action', None)
-#         if action == 'value_hours':
-#             try:
-#                 employee = Employee.objects.get(
-#                     id=request.GET.get('idemp')
-#                 )
-#                 value_hour = str(round(employee.sueldo/240, 2))
-#                 sucursal = str(employee.sucursal_id)
-#                 return JsonResponse({'hour': value_hour, "sucursal": sucursal}, status=200)
-
-#             except Exception as ex:
-#                 return JsonResponse({"message": ex}, status=400)
-
-#         return JsonResponse({}, status=400)
 
 
 class CabeceraDetailView(PermissionMixin, View):
 
     def get(self, request, *args, **kwargs):
         try:
-            overtime = Cabecera.objects.get(
+            cabecera = Cabecera.objects.get(
                 id=request.GET.get('id')
             )
 
-            det_overtime = Detalle.objects.filter(
-                overtime_id=overtime.id)
+            det_cabecera = Detalle.objects.filter(
+                cabecera_id=cabecera.id)
             # model_to_dict(overtime)
             lista = []
-            for det in det_overtime:
-                lista.append({"id": det.item.id, "des": det.item.name_short,
-                              "fac": det.item.value, "nh": det.number_hours,
-                              "vh": det.value})
-
-            return JsonResponse({'overtime': {'id': overtime.id,
-                                              'calendar': overtime.calendar.codigo_rol,
-                                              'empleado': overtime.employee.get_full_name(),
-                                              'sucursal': overtime.sucursal.name,
-                                              'value_hour': overtime.value_hour,
-                                              'total': overtime.total,
-                                              'proceso': overtime.processed,
-
-                                              },
-                                 "detail": lista}, status=200)
+            for det in det_cabecera:
+                lista.append({
+                    "product": det.product.name,
+                    "quantity": det.quantity,
+                    "value": det.subtotal
+                })
+            return JsonResponse({'factura':
+                                 {'id': cabecera.id,
+                                  'client': cabecera.client.getFullName(),
+                                  'date': cabecera.date,
+                                  'total': cabecera.total,
+                                  'iva': cabecera.iva,
+                                  },
+                                 "detail": lista
+                                 }, status=200)
 
         except Exception as ex:
             return JsonResponse({"message": ex}, status=400)

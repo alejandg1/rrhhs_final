@@ -23,7 +23,7 @@ class Category(ModelBase):
 
 
 class Product(ModelBase):
-    price = models.IntegerField(
+    price = models.FloatField(
         verbose_name='precio', default=0)
     description = models.CharField(verbose_name="Descripcion", max_length=100)
     name = models.CharField(verbose_name="nombre", max_length=20)
@@ -58,6 +58,9 @@ class Client(ModelBase):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    def getFullName(self):
+        return f'{self.first_name} {self.last_name}'
+
     class Meta:
         verbose_name = 'Client'
         verbose_name_plural = 'Clients'
@@ -67,12 +70,13 @@ class Client(ModelBase):
 class Cabecera(ModelBase):
     client = models.ForeignKey(
         Client, on_delete=models.PROTECT, verbose_name='Cliente')
-    date = models.DateTimeField(verbose_name='Fecha', default=timezone.now)
-    subtotal = models.IntegerField(verbose_name='Subtotal', default=0)
+    date = models.DateField(verbose_name='Fecha',
+                            auto_now_add=True, null=True)
+    subtotal = models.FloatField(verbose_name='Subtotal', default=0)
     iva = models.IntegerField(
         verbose_name='Iva', choices=CREDIT_INTEREST,
         default=CREDIT_INTEREST[0][0])
-    total = models.IntegerField(verbose_name='Total', default=0)
+    total = models.FloatField(verbose_name='Total', default=0)
 
     def get_model_dict(self):
         item = model_to_dict(self)

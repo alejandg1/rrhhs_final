@@ -24,16 +24,15 @@
   <th>Subtotal</th>
   <th>Iva</th>
   <th>Total</th>
-
   <th class="text-danger">Acciones</th>
 </tr>
-{% endblock %} {% block rows %} {% for item in factura %} vo ac a
+{% endblock %} {% block rows %} {% for item in factura %}
 <tr>
   <td>{{item.client}}</td>
-  <td>{{item.date}}</td>
-  <td>{{item.total|date:"d/m/Y"}}</td>
-  <td>{{item.balance}}</td>
-  <td>{{item.client}}</td>
+  <td>{{item.date|date:"d/m/Y"}}</td>
+  <td>{{item.subtotal}}</td>
+  <td>{{item.iva}}</td>
+  <td>{{item.total}}</td>
   {% comment %} {% if item.active %}
   <td class="text-center text-success fs-3">
     <i class="bx bx-check-circle"></i>
@@ -55,7 +54,7 @@
 
     {% if permissions.change_cabecera%}
     <a
-      href="{% url 'ventas:generar_pdf_prestamo' %}"
+      href="{% url 'ventas:generar_pdf' %}"
       class="text-info fs-4"
       data-bs-toggle="tooltip"
       data-bs-title="Descargar PDF"
@@ -64,7 +63,7 @@
     </a>
     <a
       class="text-success fs-4"
-      href="{% url 'venta:cabecera_update' item.id %}"
+      href="{% url 'ventas:cabecera_update' item.id %}"
       data-bs-toggle="tooltip"
       data-bs-title="Editar la factura"
       ><i class="bi bi-pencil-fill"></i
@@ -112,28 +111,26 @@
     </div>
   </div>
 </div>
-{% endblock %} {% comment %} {% block file_js %}
+{% endblock %} {% block file_js %}
 
 <script>
   document.getElementById("detalle").addEventListener("click", async (e) => {
     const fil = e.target.closest("button[rel=rel-detail]");
     if (fil) {
       const data = await fetchGet(
-        `/personal_debt/Credit/detail?id=${fil.dataset.id}`
+        `/ventas/factura/detail?id=${fil.dataset.id}`
       );
       console.log(data);
       if (!data.ok) return alert("error en los datos");
-      let { id, empleado, item, registro, interes, balance, prestamo } =
-        data.data.credit;
+      let { client, total, date, iva, id } = data.data.factura;
 
       let detail = data.data.detail;
       trHoras = "";
       detail.forEach((det) => {
         trHoras += `<tr>
-                    <td>${det.id}</td>
-                    <td>${det.dat}</td>
-                    <td>${det.quo}</td>
-                    <td>${det.balance} $</td>
+                    <td>${det.product}</td>
+                    <td>${det.quantity}</td>
+                    <td>${det.value}</td>
                 </tr>`;
       });
       document.getElementById(
@@ -141,22 +138,21 @@
       ).innerHTML = `Detalle del credito: ${id}`;
       $body = document.getElementById("modal-body");
       $body.innerHTML = `
-            <h5>Empleado: ${empleado} </h5>
-            <h6>item: ${item}</h6>
-            <h6>registro: <span class="text-bg-danger">${registro}<span>  </p>
-            <hr>
+            <h5>Cliente: ${client} </h5>
+            <h6>total: ${total}</h6>
+            <h6>date: ${date}</h6>
+            <h6>iva: ${iva}</h6>
             <section class="table-responsive" style="margin-top:-35px;margin-bottom: -35px;">
             <table class="table table-hover table-fluid">
             <thead class="text-center border-4 custom-header-rounded   ">
-                <tr class="text-info"> 
-                    <th class="text-info">id</th>
-                    <th class="text-info">fecha</th>
-                    <th class="text-info">N. cuota</th>
-                    <th class="text-info">balance</th>
+                <tr class="text-info">
+                    <th class="text-info">producto</th>
+                    <th class="text-info">cantidad</th>
+                    <th class="text-info">precio</th>
                 </tr>
             </thead>
             <tbody class="text-center">
-              ${trHoras}  
+              ${trHoras}
             </tbody>
             </table>
         </section>
@@ -164,4 +160,4 @@
     }
   });
 </script>
-{% endblock %} {% endcomment %}
+{% endblock %}

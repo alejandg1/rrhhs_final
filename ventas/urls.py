@@ -20,5 +20,5 @@ urlpatterns += [
          name="cabecera_delete"),
     path('factura/detail', cabecera.CabeceraDetailView.as_view(),
          name="cabecera_detail"),
-    path('factura/generar_pdf', generar_pdf, name="generar_pdf"),
+    path('factura/generar_pdf/', generar_pdf, name="generar_pdf"),
 ]

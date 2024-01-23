@@ -1,138 +1,142 @@
 // Variable de objetos
-let d = document,
-  c = console.log;
+let d = document
 // ------------------- carga inicial de la pagina ------------------------
-d.addEventListener("DOMContentLoaded", function (e) {
+d.addEventListener("DOMContentLoaded", function(e) {
   // Declaracion de variables
-  let $employee = d.getElementById("id_employee");
+  let $client = d.getElementById("id_client");
+  let $subtotal = d.getElementById("id_subtotal");
+  let $total = d.getElementById("id_total");
+  let $iva = d.getElementById("id_iva");
   let $detailBody = d.getElementById("detalle");
-  let $hoursDescription = d.getElementById("type_hours");
+  let $product = d.getElementById("product");
+  let $cantidad = d.getElementById("cantidad")
   let $btnAdd = d.getElementById("btnadd");
   let $btnGrabar = d.getElementById("btnGrabar");
-  let $form = d.getElementById("form-container");
-  let detailOvertime = [];
-  if (detail_hours.length > 0) {
-    detailOvertime = detail_hours.map((item) => {
-      const { id: idHour, des: description, fac: factor, nh, vh: value } = item;
-      return { idHour, description, factor, nh, value };
+  let $form = d.getElementById("form-container"); let details = [];
+  if (details_fac.length > 0) {
+    details = details_fac.map((item) => {
+      const {
+        prod: product_name,
+        product_id: product,
+        nh,
+        quant: quantity,
+        subtotal: subtotal,
+        price: price
+      } = item;
+      return {
+        subtotal,
+        product,
+        nh,
+        quantity,
+        product_name,
+        price
+      };
     });
     present();
     totals();
   }
   // Declaracion de metodos
   // ---------- calcula el sobretiempo y lo añade al arreglo detailOvertime[] ----------
-  const calculation = (idHour, factor, description, vh, nh) => {
-    const hours = detailOvertime.find((hour) => hour.idHour == idHour);
-    if (hours) {
+  const calculation = (product_id, product, cantidad, precio) => {
+    const exist = details.find((item) => item.product == product);
+    if (exist) {
       if (
         !confirm(
-          `¿Ya existe ingresado ${hours.nh} =>  ${description}, Desea actualizar las ${description}?`
+          `¿Este producto ya ha sido ingresado desea actualizar la a cantidad a: ${cantidad}?`
         )
       )
         return;
-      nh = nh + hours.nh;
-      detailOvertime = detailOvertime.filter((hour) => hour.idHour !== idHour);
+      details = details.filter((det) => det.product !== product);
     }
-    let value = parseFloat((vh * factor * nh).toFixed(2));
-    detailOvertime.push({ idHour, description, factor, nh, value });
-    present();
-    totals();
-  };
-  // ------------------- actualiza el detalle del sobretiempo seleccionado -----------
-  const reCalculation = (vh) => {
-    detailOvertime = detailOvertime.map((item) => {
-      let { idHour, description, factor, nh } = item;
-      let value = parseFloat((vh * factor * nh).toFixed(2));
-      c({ idHour, description, factor, nh, value });
-      return { idHour, description, factor, nh, value };
+    let calculado = parseFloat((cantidad * precio).toFixed(2));
+    details.push({
+      product: product_id,
+      product_name: product,
+      price: precio,
+      quantity: cantidad,
+      subtotal: calculado
     });
     present();
     totals();
   };
+  // ------------------- actualiza el detalle del sobretiempo seleccionado -----------
   // ---------------  borra el sobretiempo dado el id en el arreglo detailOvertime[] ------------
-  const deleteHours = (id) => {
-    detailOvertime = detailOvertime.filter((item) => item.idHour !== id);
+  const deleteHours = (product) => {
+    details = details.filter((item) => item.product !== product);
     present();
     totals();
   };
   // recorre el arreglo detailOvertime y renderiza el detalle del sobretiempo -----------
   function present() {
-    c("estoy en present()");
     let detalle = document.getElementById("detalle");
     detalle.innerHTML = "";
-    detailOvertime.forEach((hours) => {
+    details.forEach((item) => {
       detalle.innerHTML += `<tr>
-            <td>${hours.idHour}</td>
-            <td>${hours.description}</td>
-            <td>${hours.factor}</td>
-            <td>${hours.nh}</td>
-            <td>💰${hours.value}</td>
+            <td>${item.product_name}</td>
+            <td>${item.cantidad}</td>
+            <td>${item.price} $</td>
+            <td>💰${item.subtotal}</td>
             <td class="text-center ">
-                <button rel="rel-delete" data-id="${hours.idHour}" class="text-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar registro"><i class="bi bi-x-circle-fill"></i></button>
+                <button rel="rel-delete" data-id="${item.producto}" class="text-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar registro"><i class="bi bi-x-circle-fill"></i></button>
             </td>
           </tr>`;
     });
   }
   // ----- Sumariza del arreglo detailOvertime[] y lo renderiza en la tabla de la pagina -----
   function totals() {
-    const sumTotals = detailOvertime.reduce((acum, item) => {
-      return acum + item.value;
+    const sumTotals = details.reduce((acum, item) => {
+      return (acum + item.subtotal)
     }, 0);
-    d.getElementById("id_total").value = sumTotals.toFixed(2);
+    let iva = parseInt($iva.options[$iva.selectedIndex].innerText)
+    let calculo = (sumTotals * (iva / 100)) + sumTotals
+    $subtotal.value = sumTotals.toFixed(2);
+    $total.value = calculo.toFixed(2);
   }
   // ------------- manejo del DOM -------------
-  $employee.addEventListener("change", async (e) => {
-    let idEmployee = e.target.value;
-    if (!idEmployee) return;
-    idEmployee = parseInt(e.target.value);
-    const employee = await fetchGet(
-      `/payment_role/overtime/data_employee?idemp=${idEmployee}&action=value_hours`
-    );
-    if (!employee.ok) return alert("error en los datos");
-    d.getElementById("id_value_hour").value = employee.data.hour;
-    d.getElementById("id_sucursal").value = employee.data.sucursal;
-    reCalculation(employee.data.hour);
+  $iva.addEventListener("change", async (e) => {
+    e.preventDefault()
+    totals()
   });
   // ---------- envia los datos del sobretiempo al backend por ajax para grabarlo ----------
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (parseFloat(d.getElementById("id_total").value) > 0.0) {
+    if (parseFloat(d.getElementById("id_subtotal").value) > 0.0) {
       const formData = new FormData($form);
-      formData.append("detail", JSON.stringify(detailOvertime));
-      const employee = await fetchPost(location.pathname, formData);
-      console.log(formData);
-      console.log(employee);
-      setTimeout(9000);
-      if (!employee.ok) return c(employee.data);
+      formData.append("detail", JSON.stringify(details));
+      const request = await fetchPost(location.pathname, formData);
+      console.log(formData)
+      if (!request.ok) return console.log(request.data);
       window.location = backUrl;
     } else {
-      alert("!!!Ingrese horas de sobretiempo para grabar!!!");
+      alert("!!!Ingrese productos para grabar!!!");
     }
   });
   // -------- registra las horas del sobretiempo en el arreglo detailOvertime[] ---------
   $btnAdd.addEventListener("click", (e) => {
-    let numeHour = parseFloat(d.getElementById("id_nume_hours").value);
-    if (numeHour > 0.0 && d.getElementById("id_calendar").value.length > 0) {
-      let typeHours = parseInt($hoursDescription.value);
-      let valueHour = parseFloat(d.getElementById("id_value_hour").value);
-      let factor =
-        $hoursDescription.options[$hoursDescription.selectedIndex].dataset
-          .value;
-      factor = factor.replace(",", ".");
-      let hoursDescription =
-        $hoursDescription.options[$hoursDescription.selectedIndex].text;
-      calculation(typeHours, factor, hoursDescription, valueHour, numeHour);
-      d.getElementById("id_nume_hours").value = "";
+    if (parseFloat($product.value) > 0.0 && parseInt($cantidad.value) > 0) {
+      e.preventDefault()
+      let nombre = $product.options[$product.selectedIndex].innerText
+      let price = $product.options[$product.selectedIndex].dataset.value
+      let id = $product.value
+      console.log(id)
+      calculation(
+        id,
+        nombre,
+        parseInt($cantidad.value),
+        parseFloat(price)
+      );
+      d.getElementById("id_subtotal").value = "";
     } else {
       alert(
-        "Faltan datos de ingresar( horas de sobretiempo o calendario de rol"
+        "Faltan datos de ingresar"
       );
     }
+    totals()
   });
   //---- por delegacion de eventos seleccionada la fila de las horas del sobretiempo ----------
   //---- y la elimina del arreglo de detailOvertime[]  ---------
   $detailBody.addEventListener("click", (e) => {
     const fil = e.target.closest("button[rel=rel-delete]");
-    if (fil) deleteHours(parseInt(fil.dataset.id));
+    if (fil) deleteHours(($product.options[$product.selectedIndex].innerText));
   });
 });

@@ -13,21 +13,24 @@
     {% include "components/field.html" with field=form.client %}
   </div>
   <div class="col-md-3">
-    {% include "components/field.html" with field=form.date %}
-  </div>
-  <div class="col-md-3">
     {% include "components/field.html" with field=form.subtotal %}
   </div>
   <div class="col-md-3">
+    {% include "components/field.html" with field=form.total %}
+  </div>
+  <div class="col-md-3">
     {% include "components/field.html" with field=form.iva %}
+  </div>
+  <div class="col-md-3">
+    {% include "components/field.html" with field=form.date %}
   </div>
 </div>
 <div class="row mb-3">
 		<div class="col-md-3 ">
 			<label for="opciones" class="form-label">producto</label>
-			<select name="type_hours" id="product" class="form-control">
+			<select name="productos" id="product" class="form-control">
 				{% for item in products %}
-        <option data-value="{{item.name}}" value="{{item.id}}">{{item.name}}  {{item.price}}$  {{item.stock}} units</option>
+        <option data-value="{{item.price}}" value="{{item.id}}">{{item.name}}</option>
 				{% endfor %}
 			</select>
 			
@@ -37,8 +40,8 @@
     <input
       type="number"
       class="form-control"
-      name="balance_cuota"
-      id="balance_quota"
+      name="cantidad"
+      id="cantidad"
       placeholder="Ingrese el balance de la cuota"
     />
   </div>
@@ -62,21 +65,21 @@
   <table class="table table-hover table-fluid" id="tableOvertime">
     <thead class="text-center border-4 custom-header-rounded">
       <tr class="text-info">
-        <!-- <th class="text-info">IdDetalle</th> -->
         <th class="text-info">producto</th>
-        <!-- <th class="text-info">estado</th> -->
         <th class="text-info">cantidad</th>
-        <th class="text-info">subtotal</th>
+        <th class="text-info">c/u</th>
+        <th class="text-info">precio</th>
       </tr>
     </thead>
     <tbody id="detalle" class="text-center"></tbody>
   </table>
 </section>
-{% endblock %} {% block file_js %}
+{% endblock %} 
+{% block file_js %}
 <script>
   var backUrl = "{{back_url}}";
-  var detail = JSON.parse("{{ detail_credit|escapejs }}");
+  var details_fac = JSON.parse("{{ details|escapejs }}");
 </script>
-<script src="{% static 'credit/credit.js' %}"></script>
+<script src="{% static 'factura.js' %}"></script>
 
 {% endblock %}
