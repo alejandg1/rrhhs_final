@@ -33,6 +33,6 @@ urlpatterns += [
          credit_detail.CreditsDetailDeleteView.as_view(),
          name="creditDetail_delete"),
 
-    path('prestamos/generar_pdf', generar_pdf_prestamo,
+    path('prestamos/generar_pdf/<int:credit_id>', generar_pdf_prestamo,
          name='generar_pdf_prestamo'),
 ]

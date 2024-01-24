@@ -45,6 +45,16 @@
     >
       <i class="bx bxs-detail"></i>
     </button>
+    {% if permissions.change_credit %}
+    <a
+      href="{% url 'ventas:generar_pdf' item.id %}"
+      class="text-info fs-4"
+      data-bs-toggle="tooltip"
+      data-bs-title="Descargar PDF"
+    >
+      <i class="bi bi-file-earmark-pdf-fill"></i>
+    </a>
+    {% endif %} 
     {% if permissions.change_cabecera %}
     <a
       class="text-success fs-4"

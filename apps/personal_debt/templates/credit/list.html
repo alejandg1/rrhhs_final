@@ -57,7 +57,7 @@
     </button>
     {% if permissions.change_credit %}
     <a
-      href="{% url 'personal_debt:generar_pdf_prestamo' %}"
+      href="{% url 'personal_debt:generar_pdf_prestamo' item.id %}"
       class="text-info fs-4"
       data-bs-toggle="tooltip"
       data-bs-title="Descargar PDF"
