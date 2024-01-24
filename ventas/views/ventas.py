@@ -77,7 +77,7 @@ class CabeceraCreateView(PermissionMixin, CreateViewMixin, CreateView,):
             Detalle.objects.create(
                 cabecera_id=cabecera.id,
                 product_id=detail['product'],
-                quantity=detail['cantidad'],
+                quantity=detail['quantity'],
                 subtotal=detail['subtotal']
             )
         return JsonResponse({}, status=200)

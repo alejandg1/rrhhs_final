@@ -1,5 +1,5 @@
-{% extends "components/base_list.html" %} {% load static%}
-{% block search %}
+
+{% extends "components/base_list.html" %} {% load static%} {% block search %}
 <form action="" style="max-width: 450px">
   <div class="input-group">
     <input
@@ -30,10 +30,17 @@
 {% endblock %} {% block rows %} {% for item in factura %}
 <tr>
   <td>{{item.client}}</td>
-  <td>{{item.date|date:"d/m/Y"}}</td>
-  <td>{{item.subtotal}}</td>
-  <td>{{item.iva}}</td>
-  <td>{{item.total}}</td>
+  <td>{{item.date}}</td>
+  <td>{{item.total|date:"d/m/Y"}}</td>
+  <td>{{item.balance}}</td>
+  <td>{{item.client}}</td>
+  {% if item.active %}
+  <td class="text-center text-success fs-3">
+    <i class="bx bx-check-circle"></i>
+  </td>
+  {% else %}
+  <td class="text-center text-danger fs-3"><i class="bx bx-x-circle"></i></td>
+  {% endif %}
   <td class="text-center">
     <button
       rel="rel-detail"
@@ -45,7 +52,16 @@
     >
       <i class="bx bxs-detail"></i>
     </button>
-    {% if permissions.change_cabecera %}
+    {% comment %} {% if permissions.change_cabecera%}
+    <a
+      href="{% url 'ventas:generar_pdf' item.id %}"
+      class="text-info fs-4"
+      data-bs-toggle="tooltip"
+      data-bs-title="Descargar PDF"
+    >
+      <i class="bi bi-file-earmark-pdf-fill"></i>
+    </a>
+    {% endif %} {% endcomment %} {% if permissions.update_cabecera %}
     <a
       class="text-success fs-4"
       href="{% url 'ventas:cabecera_update' item.id %}"
@@ -53,8 +69,7 @@
       data-bs-title="Editar la factura"
       ><i class="bi bi-pencil-fill"></i
     ></a>
-    {% endif %}
-    {% if permissions.delete_cabecera %}
+    {% endif %} {% if permissions.delete_cabecera %}
     <a
       class="text-danger fs-4"
       href="{% url 'ventas:cabecera_delete' item.id %}"
@@ -65,10 +80,7 @@
     {% endif %}
   </td>
 </tr>
-{% empty %}
-{% include "components/empty.html" %}
-{% endfor%}
-{% endblock %}
+{% empty %} {% include "components/empty.html" %} {% endfor%} {% endblock %}
 {%block modal%}
 <div
   class="modal fade"
@@ -100,14 +112,13 @@
     </div>
   </div>
 </div>
-{% endblock %}
-{% block file_js %}
+{% endblock %} {% block file_js %}
 <script>
   document.getElementById("detalle").addEventListener("click", async (e) => {
     const fil = e.target.closest("button[rel=rel-detail]");
     if (fil) {
       const data = await fetchGet(
-        `/ventas/factura/detail?id=${fil.dataset.id}`
+        `/personal_debt/Credit/detail?id=${fil.dataset.id}`
       );
       console.log(data);
       if (!data.ok) return alert("error en los datos");
@@ -117,9 +128,10 @@
       let trHoras = "";
       detail.forEach((det) => {
         trHoras += `<tr>
-                              <td>${det.product}</td>
-                              <td>${det.quantity}</td>
-                              <td>${det.value}$</td>
+                              <td>${det.id}</td>
+                              <td>${det.dat}</td>
+                              <td>${det.value}</td>
+                              <td>${det.balance} $</td>
                           </tr>`;
       });
 
@@ -140,6 +152,7 @@
                               <th class="text-info">producto</th>
                               <th class="text-info">cantidad</th>
                               <th class="text-info">precio</th>
+                              <th class="text-info">balance</th>
                           </tr>
                       </thead>
                       <tbody class="text-center">

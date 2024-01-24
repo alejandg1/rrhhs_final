@@ -3,7 +3,6 @@ let d = document
 // ------------------- carga inicial de la pagina ------------------------
 d.addEventListener("DOMContentLoaded", function(e) {
   // Declaracion de variables
-  let $client = d.getElementById("id_client");
   let $subtotal = d.getElementById("id_subtotal");
   let $total = d.getElementById("id_total");
   let $iva = d.getElementById("id_iva");
@@ -11,7 +10,6 @@ d.addEventListener("DOMContentLoaded", function(e) {
   let $product = d.getElementById("product");
   let $cantidad = d.getElementById("cantidad")
   let $btnAdd = d.getElementById("btnadd");
-  let $btnGrabar = d.getElementById("btnGrabar");
   let $form = d.getElementById("form-container"); let details = [];
   if (details_fac.length > 0) {
     details = details_fac.map((item) => {
@@ -38,7 +36,7 @@ d.addEventListener("DOMContentLoaded", function(e) {
   // Declaracion de metodos
   // ---------- calcula el sobretiempo y lo añade al arreglo detailOvertime[] ----------
   const calculation = (product_id, product, cantidad, precio) => {
-    const exist = details.find((item) => item.product == product);
+    const exist = details.find((item) => item.product_name == product);
     if (exist) {
       if (
         !confirm(
@@ -46,7 +44,7 @@ d.addEventListener("DOMContentLoaded", function(e) {
         )
       )
         return;
-      details = details.filter((det) => det.product !== product);
+      details = details.filter((det) => det.product_name !== product);
     }
     let calculado = parseFloat((cantidad * precio).toFixed(2));
     details.push({
@@ -59,10 +57,21 @@ d.addEventListener("DOMContentLoaded", function(e) {
     present();
     totals();
   };
+
+  const reCalculation = (vh) => {
+    detailOvertime= detailOvertime.map((item) => {
+      let { idHour, description, factor, nh } = item
+      let value = parseFloat((vh * factor * nh).toFixed(2))
+      c({ idHour, description, factor, nh, value })
+      return { idHour, description, factor, nh, value } 
+    })
+    present()
+    totals()
+  }
   // ------------------- actualiza el detalle del sobretiempo seleccionado -----------
   // ---------------  borra el sobretiempo dado el id en el arreglo detailOvertime[] ------------
   const deleteHours = (product) => {
-    details = details.filter((item) => item.product !== product);
+    details = details.filter((item) => item.product_name !== product);
     present();
     totals();
   };
@@ -73,11 +82,11 @@ d.addEventListener("DOMContentLoaded", function(e) {
     details.forEach((item) => {
       detalle.innerHTML += `<tr>
             <td>${item.product_name}</td>
-            <td>${item.cantidad}</td>
+            <td>${item.quantity}</td>
             <td>${item.price} $</td>
             <td>💰${item.subtotal}</td>
             <td class="text-center ">
-                <button rel="rel-delete" data-id="${item.producto}" class="text-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar registro"><i class="bi bi-x-circle-fill"></i></button>
+                <button rel="rel-delete" data-id="${item.product_name}" class="text-danger" data-bs-toggle="tooltip" data-bs-title="Eliminar registro"><i class="bi bi-x-circle-fill"></i></button>
             </td>
           </tr>`;
     });
@@ -118,7 +127,6 @@ d.addEventListener("DOMContentLoaded", function(e) {
       let nombre = $product.options[$product.selectedIndex].innerText
       let price = $product.options[$product.selectedIndex].dataset.value
       let id = $product.value
-      console.log(id)
       calculation(
         id,
         nombre,
@@ -137,6 +145,6 @@ d.addEventListener("DOMContentLoaded", function(e) {
   //---- y la elimina del arreglo de detailOvertime[]  ---------
   $detailBody.addEventListener("click", (e) => {
     const fil = e.target.closest("button[rel=rel-delete]");
-    if (fil) deleteHours(($product.options[$product.selectedIndex].innerText));
+    if (fil) deleteHours(fil.dataset.id);
   });
 });

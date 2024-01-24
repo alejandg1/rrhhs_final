@@ -83,7 +83,7 @@ class Cabecera(ModelBase):
         return item
 
     def __str__(self):
-        return f'{self.value}'
+        return f'{self.total}'
 
     class Meta:
         verbose_name = 'Cabecera factura'
@@ -93,9 +93,9 @@ class Cabecera(ModelBase):
 
 class Detalle(ModelBase):
     cabecera = models.ForeignKey(
-        Cabecera, on_delete=models.PROTECT, verbose_name='Cabecera')
+        Cabecera, on_delete=models.CASCADE, verbose_name='Cabecera')
     product = models.ForeignKey(
-        Product, on_delete=models.PROTECT, verbose_name='Producto')
+        Product, on_delete=models.CASCADE, verbose_name='Producto')
     quantity = models.IntegerField(verbose_name='Cantidad', default=0)
     unitprice = models.IntegerField(verbose_name='Precio Unitario', default=0)
     subtotal = models.IntegerField(verbose_name='Subtotal', default=0)
@@ -105,7 +105,7 @@ class Detalle(ModelBase):
         return item
 
     def __str__(self):
-        return f'{self.value}'
+        return f'{self.subtotal}'
 
     class Meta:
         verbose_name = 'Detalle factura'

@@ -1,18 +1,20 @@
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer
 from reportlab.lib import colors
-from ventas.models import Cabecera, Detalle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer
+from apps.personal_debt.models import Credit, CreditsDetail
 
 
-def generar_pdf_factura(request):
+def generar_pdf_prestamo(request):
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="facturas.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="prestamos.pdf"'
 
     buffer = response
+    # Define margenes para el documento
     doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72,
                             topMargin=72, bottomMargin=18)
     width, height = letter
+
     elements = []
 
     title_style = TableStyle([
@@ -21,13 +23,14 @@ def generar_pdf_factura(request):
         ('FONTSIZE', (0, 0), (-1, -1), 18),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
     ])
-    title_table = Table([["Listado de Facturas"]],
-                        colWidths=[width], style=title_style)
+    title_table = Table([["Lista de Préstamos"]], colWidths=[
+                        width], style=title_style)
     elements.append(title_table)
+
     elements.append(Spacer(1, 20))
 
-    encabezados = ('ID Factura', 'Cliente', 'Fecha',
-                   'Subtotal', 'IVA', 'Total')
+    encabezados = ('ID Crédito', 'Empleado', 'Tipo Descuento',
+                   'Valor Préstamo', 'Cuota', 'Fecha', 'Saldo')
     data = [encabezados]
 
     table_style = TableStyle([
@@ -43,32 +46,28 @@ def generar_pdf_factura(request):
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
     ])
 
-    # Suponiendo que deseas listar todas las facturas
-    for cabecera in Cabecera.objects.all():
-        factura_data = [
-            str(cabecera.id),
-            f"{cabecera.client.first_name} {cabecera.client.last_name}",
-            cabecera.date.strftime('%Y-%m-%d'),
-            f"{cabecera.subtotal:.2f}",
-            f"{cabecera.iva:.2f}",
-            f"{cabecera.total:.2f}"
+    for credito in Credit.objects.all():
+        credit_data = [
+            str(credito.id),
+            f"{credito.employee.last_name} {credito.employee.firts_name}",
+            credito.item.description.split(" ")[0],  # Ejemplo: 'PRESTAMO'
+            "{:.2f}".format(credito.loan_val),
+            "", "",  # Cuotas y fechas estarán vacías en esta fila
+            "{:.2f}".format(credito.balance),  # Saldo del crédito
         ]
-        data.append(factura_data)
+        data.append(credit_data)
 
-        # Agregar las filas de los Detalles asociados a la factura
-        for detalle in Detalle.objects.filter(cabecera=cabecera).order_by('id'):
+        # Agregar las filas de los CreditsDetail asociados
+        for detalle in CreditsDetail.objects.filter(credit=credito).order_by('quota'):
             detail_data = [
                 "", "", "", "",  # Las primeras cuatro columnas estarán vacías para los detalles
-                f"{detalle.product.name}",
-                f"{detalle.quantity}",
-                f"{detalle.unitprice:.2f}",
-                f"{detalle.subtotal:.2f}"
+                f"Cuota {detalle.quota}",
+                detalle.date_discount.strftime('%Y-%m-%d'),
+                "{:.2f}".format(detalle.balance_quota),  # Saldo de la cuota
             ]
             data.append(detail_data)
-        # Agregar un espacio entre cada factura
-        data.append([""] * 6)
 
-    table = Table(data, colWidths=[width/6.0]*6, style=table_style)
+    table = Table(data, colWidths=[width/7.0]*7, style=table_style)
     elements.append(table)
 
     doc.build(elements)
